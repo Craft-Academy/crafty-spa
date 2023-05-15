@@ -1,1 +1,0 @@
-# crafty-spa
