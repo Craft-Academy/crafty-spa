@@ -1,22 +1,23 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { getAuthUserTimeline } from "../usecases/get-auth-user-timeline.usecase";
-
-type TimelinesState = {
-  user: string;
-  messages: {
-    text: string;
-    author: string;
-    publishedAt: string;
-  }[];
-};
+import { timelinesAdapter } from "../model/timeline.entity";
+import { RootState } from "@/lib/create-store";
 
 export const timelinesSlice = createSlice({
   name: "timelines",
-  initialState: {} as TimelinesState,
+  initialState: timelinesAdapter.getInitialState(),
   reducers: {},
   extraReducers(builder) {
-    builder.addCase(getAuthUserTimeline.fulfilled, (_, action) => {
-      return action.payload;
+    builder.addCase(getAuthUserTimeline.fulfilled, (state, action) => {
+      const timeline = action.payload;
+      timelinesAdapter.addOne(state, {
+        id: timeline.id,
+        user: timeline.user,
+        messages: timeline.messages.map((m) => m.id),
+      });
     });
   },
 });
+
+export const selectTimeline = (timelineId: string, state: RootState) =>
+  timelinesAdapter.getSelectors().selectById(state.timelines, timelineId);

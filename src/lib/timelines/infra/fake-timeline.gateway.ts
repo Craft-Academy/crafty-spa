@@ -7,8 +7,10 @@ export class FakeTimelineGateway implements TimelineGateway {
   timelinesByUser = new Map<
     string,
     {
+      id: string;
       user: string;
       messages: {
+        id: string;
         text: string;
         author: string;
         publishedAt: string;
