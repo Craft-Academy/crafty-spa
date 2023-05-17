@@ -12,7 +12,27 @@ export enum HomeViewModelType {
 export const selectHomeViewModel = (
   rootState: RootState,
   getNow: () => string
-) => {
+): {
+  timeline:
+    | {
+        type: HomeViewModelType.NoTimeline;
+      }
+    | {
+        type: HomeViewModelType.EmptyTimeline;
+        info: string;
+      }
+    | {
+        type: HomeViewModelType.WithMessages;
+        messages: {
+          id: string;
+          userId: string;
+          username: string;
+          profilePictureUrl: string;
+          publishedAt: string;
+          text: string;
+        }[];
+      };
+} => {
   const now = getNow();
   const timeline = selectTimeline("alice-timeline-id", rootState);
 
@@ -37,7 +57,7 @@ export const selectHomeViewModel = (
     id: msg.id,
     userId: msg.author,
     username: msg.author,
-    profilePicture: `https://picsum.photos/200?random=${msg.author}`,
+    profilePictureUrl: `https://picsum.photos/200?random=${msg.author}`,
     publishedAt: timeAgo(msg.publishedAt, "", { relativeDate: now }),
     text: msg.text,
   }));

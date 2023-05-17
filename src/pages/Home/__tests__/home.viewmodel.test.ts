@@ -82,7 +82,7 @@ describe("Home view model", () => {
             id: "msg1-id",
             userId: "Bob",
             username: "Bob",
-            profilePicture: "https://picsum.photos/200?random=Bob",
+            profilePictureUrl: "https://picsum.photos/200?random=Bob",
             publishedAt: "26 minutes ago",
             text: "Hi it's Bob !",
           },
@@ -92,7 +92,6 @@ describe("Home view model", () => {
   });
 
   test("Example: there is multiple messages in the timeline", () => {
-    const now = "2023-05-17T11:21:00.000Z";
     const store = createTestStore(
       {},
       {
@@ -142,7 +141,7 @@ describe("Home view model", () => {
             id: "msg1-id",
             userId: "Bob",
             username: "Bob",
-            profilePicture: "https://picsum.photos/200?random=Bob",
+            profilePictureUrl: "https://picsum.photos/200?random=Bob",
             publishedAt: "26 minutes ago",
             text: "Hi it's Bob !",
           },
@@ -150,7 +149,7 @@ describe("Home view model", () => {
             id: "msg2-id",
             userId: "Alice",
             username: "Alice",
-            profilePicture: "https://picsum.photos/200?random=Alice",
+            profilePictureUrl: "https://picsum.photos/200?random=Alice",
             publishedAt: "22 minutes ago",
             text: "Hi Bob !",
           },
