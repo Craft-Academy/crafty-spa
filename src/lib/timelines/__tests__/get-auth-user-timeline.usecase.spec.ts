@@ -3,7 +3,10 @@ import { describe, it, expect } from "vitest";
 import { getAuthUserTimeline } from "../usecases/get-auth-user-timeline.usecase";
 import { FakeTimelineGateway } from "../infra/fake-timeline.gateway";
 import { FakeAuthGateway } from "@/lib/auth/infra/fake-auth.gateway";
-import { selectTimeline } from "../slices/timelines.slice";
+import {
+  selectIsUserTimelineLoading,
+  selectTimeline,
+} from "../slices/timelines.slice";
 import { selectMessage } from "../slices/messages.slice";
 
 describe("Feature: Retrieving authenticated user's timeline", () => {
@@ -30,9 +33,11 @@ describe("Feature: Retrieving authenticated user's timeline", () => {
     });
 
     //act (when)
-    await whenRetrievingAuthenticatedUserTimeline();
+    const timelineRetrieving = whenRetrievingAuthenticatedUserTimeline();
 
     //assert (then)
+    thenTheTimelineOfUserShouldBeLoading("Alice");
+    await timelineRetrieving;
     thenTheReceivedTimelineShouldBe({
       id: "alice-timeline-id",
       user: "Alice",
@@ -82,6 +87,14 @@ async function whenRetrievingAuthenticatedUserTimeline() {
   await store.dispatch(getAuthUserTimeline());
 }
 
+function thenTheTimelineOfUserShouldBeLoading(user: string) {
+  const isUserTimelineLoading = selectIsUserTimelineLoading(
+    user,
+    store.getState()
+  );
+  expect(isUserTimelineLoading).toBe(true);
+}
+
 function thenTheReceivedTimelineShouldBe(expectedTimeline: {
   user: string;
   id: string;
@@ -104,4 +117,7 @@ function thenTheReceivedTimelineShouldBe(expectedTimeline: {
   expectedTimeline.messages.forEach((msg) => {
     expect(selectMessage(msg.id, store.getState())).toEqual(msg);
   });
+  expect(
+    selectIsUserTimelineLoading(expectedTimeline.user, store.getState())
+  ).toBe(false);
 }

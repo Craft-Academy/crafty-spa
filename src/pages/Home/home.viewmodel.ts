@@ -1,10 +1,14 @@
 import { format as timeAgo } from "timeago.js";
 import { RootState } from "@/lib/create-store";
 import { selectMessages } from "@/lib/timelines/slices/messages.slice";
-import { selectTimeline } from "@/lib/timelines/slices/timelines.slice";
+import {
+  selectIsUserTimelineLoading,
+  selectTimeline,
+} from "@/lib/timelines/slices/timelines.slice";
 
 export enum HomeViewModelType {
   NoTimeline = "NO_TIMELINE",
+  LoadingTimeline = "LOADING_TIMELINE",
   EmptyTimeline = "EMPTY_TIMELINE",
   WithMessages = "TIMELINE_WITH_MESSAGES",
 }
@@ -16,6 +20,10 @@ export const selectHomeViewModel = (
   timeline:
     | {
         type: HomeViewModelType.NoTimeline;
+      }
+    | {
+        type: HomeViewModelType.LoadingTimeline;
+        info: string;
       }
     | {
         type: HomeViewModelType.EmptyTimeline;
@@ -35,6 +43,16 @@ export const selectHomeViewModel = (
 } => {
   const now = getNow();
   const timeline = selectTimeline("alice-timeline-id", rootState);
+  const isUserTimelineLoading = selectIsUserTimelineLoading("Alice", rootState);
+
+  if (isUserTimelineLoading) {
+    return {
+      timeline: {
+        type: HomeViewModelType.LoadingTimeline,
+        info: "Loading...",
+      },
+    };
+  }
 
   if (!timeline) {
     return {

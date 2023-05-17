@@ -19,6 +19,8 @@ export const Home = () => {
     switch (viewModel.timeline.type) {
       case HomeViewModelType.NoTimeline:
         return null;
+      case HomeViewModelType.LoadingTimeline:
+        return <Text>{viewModel.timeline.info}</Text>;
       case HomeViewModelType.EmptyTimeline:
         return <Text>{viewModel.timeline.info}</Text>;
       case HomeViewModelType.WithMessages:

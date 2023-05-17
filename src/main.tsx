@@ -9,7 +9,7 @@ import { createRouter } from "./router.tsx";
 const authGateway = new FakeAuthGateway();
 authGateway.authUser = "Alice";
 
-const timelineGateway = new FakeTimelineGateway();
+const timelineGateway = new FakeTimelineGateway(1000);
 timelineGateway.timelinesByUser.set(authGateway.authUser, {
   id: "alice-timeline-id",
   user: "Alice",
