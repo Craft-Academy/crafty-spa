@@ -1,14 +1,25 @@
+import { format as timeAgo } from "timeago.js";
 import { RootState } from "@/lib/create-store";
 import { selectMessages } from "@/lib/timelines/slices/messages.slice";
 import { selectTimeline } from "@/lib/timelines/slices/timelines.slice";
 
-export const selectHomeViewModel = (rootState: RootState) => {
+export enum HomeViewModelType {
+  NoTimeline = "NO_TIMELINE",
+  EmptyTimeline = "EMPTY_TIMELINE",
+  WithMessages = "TIMELINE_WITH_MESSAGES",
+}
+
+export const selectHomeViewModel = (
+  rootState: RootState,
+  getNow: () => string
+) => {
+  const now = getNow();
   const timeline = selectTimeline("alice-timeline-id", rootState);
 
   if (!timeline) {
     return {
       timeline: {
-        type: "NO_TIMELINE",
+        type: HomeViewModelType.NoTimeline,
       },
     };
   }
@@ -16,7 +27,7 @@ export const selectHomeViewModel = (rootState: RootState) => {
   if (timeline.messages.length === 0) {
     return {
       timeline: {
-        type: "EMPTY_TIMELINE",
+        type: HomeViewModelType.EmptyTimeline,
         info: "There is no messages yet",
       },
     };
@@ -27,13 +38,13 @@ export const selectHomeViewModel = (rootState: RootState) => {
     userId: msg.author,
     username: msg.author,
     profilePicture: `https://picsum.photos/200?random=${msg.author}`,
-    publishedAt: msg.publishedAt,
+    publishedAt: timeAgo(msg.publishedAt, "", { relativeDate: now }),
     text: msg.text,
   }));
 
   return {
     timeline: {
-      type: "TIMELINE_WITH_MESSAGES",
+      type: HomeViewModelType.WithMessages,
       messages,
     },
   };
