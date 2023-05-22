@@ -12,11 +12,11 @@ export const ProtectedPageLayout = () => {
 
   const navigate = useNavigate();
 
-  // useEffect(() => {
-  //   if (!isUserAuthenticated) {
-  //     navigate("/login");
-  //   }
-  // }, [isUserAuthenticated, navigate]);
+  useEffect(() => {
+    if (!isUserAuthenticated) {
+      navigate("/login");
+    }
+  }, [isUserAuthenticated, navigate]);
 
   if (!isUserAuthenticated) return null;
 
