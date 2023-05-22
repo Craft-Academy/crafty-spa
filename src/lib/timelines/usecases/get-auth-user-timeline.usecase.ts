@@ -1,3 +1,4 @@
+import { selectAuthUser } from "@/lib/auth/reducer";
 import { createAppAsyncThunk } from "@/lib/create-app-thunk";
 import { createAction } from "@reduxjs/toolkit";
 
@@ -7,8 +8,8 @@ export const getAuthUserTimelinePending = createAction<{ authUser: string }>(
 
 export const getAuthUserTimeline = createAppAsyncThunk(
   "timelines/getAuthUserTimeline",
-  async (_, { extra: { authGateway, timelineGateway }, dispatch }) => {
-    const authUser = authGateway.getAuthUser();
+  async (_, { extra: { timelineGateway }, dispatch, getState }) => {
+    const authUser = selectAuthUser(getState());
     dispatch(getAuthUserTimelinePending({ authUser }));
 
     const { timeline } = await timelineGateway.getUserTimeline({

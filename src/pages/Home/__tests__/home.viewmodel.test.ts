@@ -5,6 +5,10 @@ import { stateBuilder } from "@/lib/state-builder";
 
 const getNow = () => "2023-05-17T11:21:00.000Z";
 
+const stateBuilderWithAliceAuthenticated = stateBuilder().withAuthUser({
+  authUser: "Alice",
+});
+
 describe("Home view model", () => {
   test("Example: there is no timeline in the store", () => {
     const store = createTestStore();
@@ -19,7 +23,7 @@ describe("Home view model", () => {
   });
 
   test("Example: there is no messages in the timeline", () => {
-    const initialState = stateBuilder()
+    const initialState = stateBuilderWithAliceAuthenticated
       .withTimeline({
         id: "alice-timeline-id",
         messages: [],
@@ -39,7 +43,7 @@ describe("Home view model", () => {
   });
 
   test("Example: The timeline is loading", () => {
-    const initialState = stateBuilder()
+    const initialState = stateBuilderWithAliceAuthenticated
       .withLoadingTimelineOf({ user: "Alice" })
       .build();
     const store = createTestStore({}, initialState);
@@ -55,7 +59,7 @@ describe("Home view model", () => {
   });
 
   test("Example: there is one message in the timeline", () => {
-    const initialState = stateBuilder()
+    const initialState = stateBuilderWithAliceAuthenticated
       .withTimeline({
         id: "alice-timeline-id",
         user: "Alice",
@@ -92,7 +96,7 @@ describe("Home view model", () => {
   });
 
   test("Example: there is multiple messages in the timeline", () => {
-    const initialState = stateBuilder()
+    const initialState = stateBuilderWithAliceAuthenticated
       .withTimeline({
         id: "alice-timeline-id",
         user: "Alice",

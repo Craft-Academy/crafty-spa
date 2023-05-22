@@ -1,15 +1,13 @@
 import { describe, it, expect } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { Provider } from "@/Provider";
-import { createStore } from "@/lib/create-store";
-import { FakeAuthGateway } from "@/lib/auth/infra/fake-auth.gateway";
+import { createTestStore } from "@/lib/create-store";
 import { FakeTimelineGateway } from "@/lib/timelines/infra/fake-timeline.gateway";
 import { createRouter } from "@/router";
+import { stateBuilder } from "@/lib/state-builder";
 
 describe("Get auth user timeline", () => {
   it("displays the authenticated user timeline on the home page", async () => {
-    const authGateway = new FakeAuthGateway();
-    authGateway.authUser = "Alice";
     const timelineGateway = new FakeTimelineGateway();
     timelineGateway.timelinesByUser.set("Alice", {
       id: "alice-timeline-id",
@@ -29,10 +27,12 @@ describe("Get auth user timeline", () => {
         },
       ],
     });
-    const store = createStore({
-      authGateway,
-      timelineGateway,
-    });
+    const store = createTestStore(
+      {
+        timelineGateway,
+      },
+      stateBuilder().withAuthUser({ authUser: "Alice" }).build()
+    );
     const router = createRouter({ store });
     render(<Provider store={store} router={router} />);
 

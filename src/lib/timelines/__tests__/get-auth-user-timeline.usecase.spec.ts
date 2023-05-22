@@ -62,7 +62,6 @@ let testStateBuilder = stateBuilder();
 let store: AppStore;
 
 function givenAuthenticatedUserIs(user: string) {
-  authGateway.authUser = user;
   testStateBuilder = testStateBuilder.withAuthUser({ authUser: user });
 }
 

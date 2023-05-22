@@ -4,7 +4,9 @@ import { selectMessages } from "@/lib/timelines/slices/messages.slice";
 import {
   selectIsUserTimelineLoading,
   selectTimeline,
+  selectTimelineForUser,
 } from "@/lib/timelines/slices/timelines.slice";
+import { selectAuthUser } from "@/lib/auth/reducer";
 
 export enum HomeViewModelType {
   NoTimeline = "NO_TIMELINE",
@@ -42,8 +44,12 @@ export const selectHomeViewModel = (
       };
 } => {
   const now = getNow();
-  const timeline = selectTimeline("alice-timeline-id", rootState);
-  const isUserTimelineLoading = selectIsUserTimelineLoading("Alice", rootState);
+  const authUser = selectAuthUser(rootState);
+  const timeline = selectTimelineForUser(authUser, rootState);
+  const isUserTimelineLoading = selectIsUserTimelineLoading(
+    authUser,
+    rootState
+  );
 
   if (isUserTimelineLoading) {
     return {
