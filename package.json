@@ -9,6 +9,7 @@
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "test": "vitest",
+    "test:e2e": "vitest --config ./vitest.config.e2e.ts",
     "postinstall": "patch-package"
   },
   "dependencies": {
@@ -25,6 +26,8 @@
     "timeago.js": "^4.0.2"
   },
   "devDependencies": {
+    "@testing-library/jest-dom": "^5.16.5",
+    "@testing-library/react": "^14.0.0",
     "@total-typescript/ts-reset": "^0.4.2",
     "@types/react": "^18.0.28",
     "@types/react-dom": "^18.0.11",
@@ -34,6 +37,7 @@
     "eslint": "^8.38.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.3.4",
+    "jsdom": "^22.0.0",
     "patch-package": "^7.0.0",
     "typescript": "^5.0.2",
     "vite": "^4.3.2",
