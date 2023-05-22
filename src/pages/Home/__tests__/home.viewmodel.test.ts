@@ -1,6 +1,7 @@
 import { describe, test, expect } from "vitest";
 import { HomeViewModelType, selectHomeViewModel } from "../home.viewmodel";
 import { createTestStore } from "@/lib/create-store";
+import { stateBuilder } from "@/lib/state-builder";
 
 const getNow = () => "2023-05-17T11:21:00.000Z";
 
@@ -18,22 +19,14 @@ describe("Home view model", () => {
   });
 
   test("Example: there is no messages in the timeline", () => {
-    const store = createTestStore(
-      {},
-      {
-        timelines: {
-          ids: ["alice-timeline-id"],
-          entities: {
-            "alice-timeline-id": {
-              id: "alice-timeline-id",
-              messages: [],
-              user: "Alice",
-            },
-          },
-          loadingTimelinesByUser: {},
-        },
-      }
-    );
+    const initialState = stateBuilder()
+      .withTimeline({
+        id: "alice-timeline-id",
+        messages: [],
+        user: "Alice",
+      })
+      .build();
+    const store = createTestStore({}, initialState);
 
     const homeViewModel = selectHomeViewModel(store.getState(), getNow);
 
@@ -46,18 +39,10 @@ describe("Home view model", () => {
   });
 
   test("Example: The timeline is loading", () => {
-    const store = createTestStore(
-      {},
-      {
-        timelines: {
-          ids: [],
-          entities: {},
-          loadingTimelinesByUser: {
-            Alice: true,
-          },
-        },
-      }
-    );
+    const initialState = stateBuilder()
+      .withLoadingTimelineOf({ user: "Alice" })
+      .build();
+    const store = createTestStore({}, initialState);
 
     const homeViewModel = selectHomeViewModel(store.getState(), getNow);
 
@@ -70,33 +55,22 @@ describe("Home view model", () => {
   });
 
   test("Example: there is one message in the timeline", () => {
-    const store = createTestStore(
-      {},
-      {
-        timelines: {
-          ids: ["alice-timeline-id"],
-          entities: {
-            "alice-timeline-id": {
-              id: "alice-timeline-id",
-              messages: ["msg1-id"],
-              user: "Alice",
-            },
-          },
-          loadingTimelinesByUser: {},
+    const initialState = stateBuilder()
+      .withTimeline({
+        id: "alice-timeline-id",
+        user: "Alice",
+        messages: ["msg1-id"],
+      })
+      .withMessages([
+        {
+          id: "msg1-id",
+          author: "Bob",
+          publishedAt: "2023-05-17T10:55:00.000Z",
+          text: "Hi it's Bob !",
         },
-        messages: {
-          ids: ["msg1-id"],
-          entities: {
-            "msg1-id": {
-              id: "msg1-id",
-              author: "Bob",
-              publishedAt: "2023-05-17T10:55:00.000Z",
-              text: "Hi it's Bob !",
-            },
-          },
-        },
-      }
-    );
+      ])
+      .build();
+    const store = createTestStore({}, initialState);
 
     const homeViewModel = selectHomeViewModel(store.getState(), getNow);
 
@@ -118,45 +92,34 @@ describe("Home view model", () => {
   });
 
   test("Example: there is multiple messages in the timeline", () => {
-    const store = createTestStore(
-      {},
-      {
-        timelines: {
-          ids: ["alice-timeline-id"],
-          entities: {
-            "alice-timeline-id": {
-              id: "alice-timeline-id",
-              messages: ["msg1-id", "msg2-id"],
-              user: "Alice",
-            },
-          },
-          loadingTimelinesByUser: {},
+    const initialState = stateBuilder()
+      .withTimeline({
+        id: "alice-timeline-id",
+        user: "Alice",
+        messages: ["msg1-id", "msg2-id"],
+      })
+      .withMessages([
+        {
+          id: "msg1-id",
+          author: "Bob",
+          publishedAt: "2023-05-17T10:55:00.000Z",
+          text: "Hi it's Bob !",
         },
-        messages: {
-          ids: ["msg1-id", "msg2-id", "msg3-id"],
-          entities: {
-            "msg1-id": {
-              id: "msg1-id",
-              author: "Bob",
-              publishedAt: "2023-05-17T10:55:00.000Z",
-              text: "Hi it's Bob !",
-            },
-            "msg2-id": {
-              id: "msg2-id",
-              author: "Alice",
-              publishedAt: "2023-05-17T10:59:00.000Z",
-              text: "Hi Bob !",
-            },
-            "msg3-id": {
-              id: "msg3-id",
-              author: "Charles",
-              publishedAt: "2023-05-17T11:00:00.000Z",
-              text: "Charles' message",
-            },
-          },
+        {
+          id: "msg2-id",
+          author: "Alice",
+          publishedAt: "2023-05-17T10:59:00.000Z",
+          text: "Hi Bob !",
         },
-      }
-    );
+        {
+          id: "msg3-id",
+          author: "Charles",
+          publishedAt: "2023-05-17T11:00:00.000Z",
+          text: "Charles' message",
+        },
+      ])
+      .build();
+    const store = createTestStore({}, initialState);
 
     const homeViewModel = selectHomeViewModel(store.getState(), getNow);
 
