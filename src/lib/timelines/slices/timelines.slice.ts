@@ -1,5 +1,8 @@
 import { EntityState, createSlice } from "@reduxjs/toolkit";
-import { getAuthUserTimeline } from "../usecases/get-auth-user-timeline.usecase";
+import {
+  getAuthUserTimeline,
+  getAuthUserTimelinePending,
+} from "../usecases/get-auth-user-timeline.usecase";
 import { Timeline, timelinesAdapter } from "../model/timeline.entity";
 import { RootState } from "@/lib/create-store";
 
@@ -14,8 +17,8 @@ export const timelinesSlice = createSlice({
   }) as TimelinesSliceState,
   reducers: {},
   extraReducers(builder) {
-    builder.addCase(getAuthUserTimeline.pending, (state) => {
-      state.loadingTimelinesByUser["Alice"] = true;
+    builder.addCase(getAuthUserTimelinePending, (state, action) => {
+      state.loadingTimelinesByUser[action.payload.authUser] = true;
     });
     builder.addCase(getAuthUserTimeline.fulfilled, (state, action) => {
       const timeline = action.payload;
@@ -24,13 +27,15 @@ export const timelinesSlice = createSlice({
         user: timeline.user,
         messages: timeline.messages.map((m) => m.id),
       });
-      state.loadingTimelinesByUser["Alice"] = false;
+      state.loadingTimelinesByUser[timeline.user] = false;
     });
   },
 });
 
 export const selectTimeline = (timelineId: string, state: RootState) =>
-  timelinesAdapter.getSelectors().selectById(state.timelines, timelineId);
+  timelinesAdapter
+    .getSelectors()
+    .selectById(state.timelines.timelines, timelineId);
 
 export const selectIsUserTimelineLoading = (user: string, state: RootState) =>
-  state.timelines.loadingTimelinesByUser[user] ?? false;
+  state.timelines.timelines.loadingTimelinesByUser[user] ?? false;
