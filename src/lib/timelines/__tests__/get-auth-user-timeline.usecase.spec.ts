@@ -8,6 +8,7 @@ import {
   selectTimeline,
 } from "../slices/timelines.slice";
 import { selectMessage } from "../slices/messages.slice";
+import { stateBuilder } from "@/lib/state-builder";
 
 describe("Feature: Retrieving authenticated user's timeline", () => {
   it("Example: Alice is authenticated and can see her timeline", async () => {
@@ -105,19 +106,14 @@ function thenTheReceivedTimelineShouldBe(expectedTimeline: {
     publishedAt: string;
   }[];
 }) {
-  const authUserTimeline = selectTimeline(
-    expectedTimeline.id,
-    store.getState()
-  );
-  expect(authUserTimeline).toEqual({
-    id: expectedTimeline.id,
-    user: expectedTimeline.user,
-    messages: expectedTimeline.messages.map((m) => m.id),
-  });
-  expectedTimeline.messages.forEach((msg) => {
-    expect(selectMessage(msg.id, store.getState())).toEqual(msg);
-  });
-  expect(
-    selectIsUserTimelineLoading(expectedTimeline.user, store.getState())
-  ).toBe(false);
+  const expectedState = stateBuilder()
+    .withTimeline({
+      id: expectedTimeline.id,
+      user: expectedTimeline.user,
+      messages: expectedTimeline.messages.map((m) => m.id),
+    })
+    .withMessages(expectedTimeline.messages)
+    .withNotLoadingTimelineOf({ user: expectedTimeline.user })
+    .build();
+  expect(store.getState()).toEqual(expectedState);
 }

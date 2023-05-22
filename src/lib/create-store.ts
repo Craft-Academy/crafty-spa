@@ -1,20 +1,18 @@
 import { AnyAction, ThunkDispatch, configureStore } from "@reduxjs/toolkit";
 import { AuthGateway } from "./auth/model/auth.gateway";
 import { TimelineGateway } from "./timelines/model/timeline.gateway";
-import { reducer as timelinesReducer } from "./timelines/reducer";
 import { FakeAuthGateway } from "./auth/infra/fake-auth.gateway";
 import { FakeTimelineGateway } from "./timelines/infra/fake-timeline.gateway";
+import { rootReducer } from "./root-reducer";
 
 export type Dependencies = {
   authGateway: AuthGateway;
   timelineGateway: TimelineGateway;
 };
 
-const rootReducer = timelinesReducer;
-
 export const createStore = (
   dependencies: Dependencies,
-  preloadedState?: Partial<ReturnType<typeof rootReducer>>
+  preloadedState?: Partial<RootState>
 ) =>
   configureStore({
     reducer: rootReducer,
