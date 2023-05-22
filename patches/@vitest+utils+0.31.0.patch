@@ -1,0 +1,12 @@
+diff --git a/node_modules/@vitest/utils/dist/helpers.js b/node_modules/@vitest/utils/dist/helpers.js
+index b943c1f..3c1bbf3 100644
+--- a/node_modules/@vitest/utils/dist/helpers.js
++++ b/node_modules/@vitest/utils/dist/helpers.js
+@@ -83,6 +83,7 @@ function clone(val, seen) {
+       } else {
+         Object.defineProperty(out, k2, {
+           ...descriptor,
++          writable: true,
+           value: cloned
+         });
+       }

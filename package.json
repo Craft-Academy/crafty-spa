@@ -8,7 +8,8 @@
     "build": "tsc && vite build",
     "lint": "eslint src --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
-    "test": "vitest"
+    "test": "vitest",
+    "postinstall": "patch-package"
   },
   "dependencies": {
     "@chakra-ui/react": "^2.6.1",
@@ -33,6 +34,7 @@
     "eslint": "^8.38.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.3.4",
+    "patch-package": "^7.0.0",
     "typescript": "^5.0.2",
     "vite": "^4.3.2",
     "vite-tsconfig-paths": "^4.2.0",
