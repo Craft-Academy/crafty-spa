@@ -4,6 +4,7 @@ import { ProtectedPageLayout } from "./pages/ProtectedPageLayout";
 import { createHomeLoader } from "./pages/Home/create-home-loader";
 import { AppStore } from "./lib/create-store";
 import { Login } from "./pages/Login";
+import { RedirectHomePage } from "./pages/RedirectHomePage";
 
 export const createRouter = (
   { store }: { store: AppStore },
@@ -20,12 +21,12 @@ export const createRouter = (
       children: [
         {
           index: true,
-          loader: createHomeLoader({ store }),
-          element: <Home />,
+          element: <RedirectHomePage />,
         },
         {
-          path: "login",
-          element: <Login />,
+          path: "home",
+          loader: createHomeLoader({ store }),
+          element: <Home />,
         },
       ],
     },
