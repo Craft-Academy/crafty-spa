@@ -3,7 +3,6 @@ import { RootState } from "@/lib/create-store";
 import { selectMessages } from "@/lib/timelines/slices/messages.slice";
 import {
   selectIsUserTimelineLoading,
-  selectTimeline,
   selectTimelineForUser,
 } from "@/lib/timelines/slices/timelines.slice";
 import { selectAuthUser } from "@/lib/auth/reducer";
