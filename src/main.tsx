@@ -5,10 +5,12 @@ import { createStore } from "./lib/create-store.ts";
 import { FakeAuthGateway } from "./lib/auth/infra/fake-auth.gateway.ts";
 import { FakeTimelineGateway } from "./lib/timelines/infra/fake-timeline.gateway.ts";
 import { createRouter } from "./router.tsx";
+import { FakeStorageAuthGateway } from "./lib/auth/infra/fake-storage-auth.gateway.ts";
 
-const authGateway = new FakeAuthGateway(500);
-authGateway.willSucceedForGoogleAuthForUser = "Alice";
-authGateway.willSucceedForGithubAuthForUser = "Bob";
+const fakeAuthGateway = new FakeAuthGateway(500);
+fakeAuthGateway.willSucceedForGoogleAuthForUser = "Alice";
+fakeAuthGateway.willSucceedForGithubAuthForUser = "Bob";
+const authGateway = new FakeStorageAuthGateway(fakeAuthGateway);
 
 const timelineGateway = new FakeTimelineGateway(1000);
 timelineGateway.timelinesByUser.set("Alice", {
