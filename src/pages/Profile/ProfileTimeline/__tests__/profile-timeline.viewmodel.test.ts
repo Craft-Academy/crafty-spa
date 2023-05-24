@@ -1,68 +1,76 @@
 import { describe, test, expect } from "vitest";
-import { HomeViewModelType, selectHomeViewModel } from "../home.viewmodel";
 import { createTestStore } from "@/lib/create-store";
 import { stateBuilder } from "@/lib/state-builder";
+import {
+  ProfileTimelineViewModelType,
+  selectProfileTimelineViewModel,
+} from "../profile-timeline.viewmodel";
 
 const getNow = () => "2023-05-17T11:21:00.000Z";
 
-const stateBuilderWithAliceAuthenticated = stateBuilder().withAuthUser({
-  authUser: "Alice",
-});
-
-describe("Home view model", () => {
+describe("Profile timeline view model for Bob's profile", () => {
   test("Example: there is no timeline in the store", () => {
     const store = createTestStore();
 
-    const homeViewModel = selectHomeViewModel(store.getState(), getNow);
+    const profileTimelineViewModel = selectProfileTimelineViewModel({
+      userId: "Bob",
+      getNow,
+    })(store.getState());
 
-    expect(homeViewModel).toEqual({
+    expect(profileTimelineViewModel).toEqual({
       timeline: {
-        type: HomeViewModelType.NoTimeline,
+        type: ProfileTimelineViewModelType.NoTimeline,
       },
     });
   });
 
   test("Example: there is no messages in the timeline", () => {
-    const initialState = stateBuilderWithAliceAuthenticated
+    const initialState = stateBuilder()
       .withTimeline({
-        id: "alice-timeline-id",
+        id: "bob-timeline-id",
         messages: [],
-        user: "Alice",
+        user: "Bob",
       })
       .build();
     const store = createTestStore({}, initialState);
 
-    const homeViewModel = selectHomeViewModel(store.getState(), getNow);
+    const profileTimelineViewModel = selectProfileTimelineViewModel({
+      userId: "Bob",
+      getNow,
+    })(store.getState());
 
-    expect(homeViewModel).toEqual({
+    expect(profileTimelineViewModel).toEqual({
       timeline: {
-        type: HomeViewModelType.EmptyTimeline,
+        type: ProfileTimelineViewModelType.EmptyTimeline,
         info: "There is no messages yet",
       },
     });
   });
 
   test("Example: The timeline is loading", () => {
-    const initialState = stateBuilderWithAliceAuthenticated
-      .withLoadingTimelineOf({ user: "Alice" })
+    const initialState = stateBuilder()
+      .withLoadingTimelineOf({ user: "Bob" })
       .build();
     const store = createTestStore({}, initialState);
 
-    const homeViewModel = selectHomeViewModel(store.getState(), getNow);
+    const profileTimelineViewModel = selectProfileTimelineViewModel({
+      userId: "Bob",
+      getNow,
+    })(store.getState());
 
-    expect(homeViewModel).toEqual({
+    expect(profileTimelineViewModel).toEqual({
       timeline: {
-        type: HomeViewModelType.LoadingTimeline,
+        type: ProfileTimelineViewModelType.LoadingTimeline,
         info: "Loading...",
       },
     });
   });
 
   test("Example: there is one message in the timeline", () => {
-    const initialState = stateBuilderWithAliceAuthenticated
+    const initialState = stateBuilder()
       .withTimeline({
-        id: "alice-timeline-id",
-        user: "Alice",
+        id: "bob-timeline-id",
+        user: "Bob",
         messages: ["msg1-id"],
       })
       .withMessages([
@@ -76,11 +84,14 @@ describe("Home view model", () => {
       .build();
     const store = createTestStore({}, initialState);
 
-    const homeViewModel = selectHomeViewModel(store.getState(), getNow);
+    const profileTimelineViewModel = selectProfileTimelineViewModel({
+      userId: "Bob",
+      getNow,
+    })(store.getState());
 
-    expect(homeViewModel).toEqual({
+    expect(profileTimelineViewModel).toEqual({
       timeline: {
-        type: HomeViewModelType.WithMessages,
+        type: ProfileTimelineViewModelType.WithMessages,
         messages: [
           {
             id: "msg1-id",
@@ -96,10 +107,10 @@ describe("Home view model", () => {
   });
 
   test("Example: there is multiple messages in the timeline", () => {
-    const initialState = stateBuilderWithAliceAuthenticated
+    const initialState = stateBuilder()
       .withTimeline({
-        id: "alice-timeline-id",
-        user: "Alice",
+        id: "bob-timeline-id",
+        user: "Bob",
         messages: ["msg1-id", "msg2-id"],
       })
       .withMessages([
@@ -125,11 +136,14 @@ describe("Home view model", () => {
       .build();
     const store = createTestStore({}, initialState);
 
-    const homeViewModel = selectHomeViewModel(store.getState(), getNow);
+    const profileTimelineViewModel = selectProfileTimelineViewModel({
+      userId: "Bob",
+      getNow,
+    })(store.getState());
 
-    expect(homeViewModel).toEqual({
+    expect(profileTimelineViewModel).toEqual({
       timeline: {
-        type: "TIMELINE_WITH_MESSAGES",
+        type: ProfileTimelineViewModelType.WithMessages,
         messages: [
           {
             id: "msg1-id",
