@@ -1,16 +1,20 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, isAnyOf } from "@reduxjs/toolkit";
 import { messagesAdapter } from "../model/message.entity";
 import { RootState } from "@/lib/create-store";
 import { getAuthUserTimeline } from "../usecases/get-auth-user-timeline.usecase";
+import { getUserTimeline } from "../usecases/get-user-timeline.usecase";
 
 export const messagesSlice = createSlice({
   name: "messages",
   initialState: messagesAdapter.getInitialState(),
   reducers: {},
   extraReducers(builder) {
-    builder.addCase(getAuthUserTimeline.fulfilled, (state, action) => {
-      messagesAdapter.addMany(state, action.payload.messages);
-    });
+    builder.addMatcher(
+      isAnyOf(getAuthUserTimeline.fulfilled, getUserTimeline.fulfilled),
+      (state, action) => {
+        messagesAdapter.addMany(state, action.payload.messages);
+      }
+    );
   },
 });
 
