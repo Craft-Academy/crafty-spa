@@ -44,8 +44,9 @@ const reducer = createReducer(initialState, (builder) => {
 export const stateBuilder = (baseState = initialState) => {
   const reduce =
     <P>(actionCreator: ActionCreatorWithPayload<P>) =>
-    (payload: P) =>
-      stateBuilder(reducer(baseState, actionCreator(payload)));
+    (payload: P) => {
+      return stateBuilder(reducer(baseState, actionCreator(payload)));
+    };
 
   return {
     withAuthUser: reduce(withAuthUser),
@@ -58,3 +59,18 @@ export const stateBuilder = (baseState = initialState) => {
     },
   };
 };
+
+export const stateBuilderProvider = () => {
+  let builder = stateBuilder();
+  return {
+    getState() {
+      return builder.build();
+    },
+    setState(updateFn: (_builder: StateBuilder) => StateBuilder) {
+      builder = updateFn(builder);
+    },
+  };
+};
+
+export type StateBuilder = ReturnType<typeof stateBuilder>;
+export type StateBuilderProvider = ReturnType<typeof stateBuilderProvider>;

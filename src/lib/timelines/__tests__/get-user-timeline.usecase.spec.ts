@@ -1,15 +1,16 @@
-import { AppStore, createStore } from "@/lib/create-store";
-import { describe, it, expect } from "vitest";
-import { FakeTimelineGateway } from "../infra/fake-timeline.gateway";
-import { FakeAuthGateway } from "@/lib/auth/infra/fake-auth.gateway";
-import { selectIsUserTimelineLoading } from "../slices/timelines.slice";
-import { stateBuilder } from "@/lib/state-builder";
-import { getUserTimeline } from "../usecases/get-user-timeline.usecase";
+import { describe, it, beforeEach } from "vitest";
+import { TimelinesFixture, createTimelinesFixture } from "./timelines.fixture";
 
 describe("Feature: Retrieving user's timeline", () => {
+  let fixture: TimelinesFixture;
+
+  beforeEach(() => {
+    fixture = createTimelinesFixture();
+  });
+
   it("Example: We are on Bob profile", async () => {
     //arrange (given)
-    givenExistingTimeline({
+    fixture.givenExistingTimeline({
       id: "bob-timeline-id",
       user: "Bob",
       messages: [
@@ -29,12 +30,12 @@ describe("Feature: Retrieving user's timeline", () => {
     });
 
     //act (when)
-    const timelineRetrieving = whenRetrievingUserTimeline("Bob");
+    const timelineRetrieving = fixture.whenRetrievingUserTimeline("Bob");
 
     //assert (then)
-    thenTheTimelineOfUserShouldBeLoading("Bob");
+    fixture.thenTheTimelineOfUserShouldBeLoading("Bob");
     await timelineRetrieving;
-    thenTheReceivedTimelineShouldBe({
+    fixture.thenTheReceivedTimelineShouldBe({
       id: "bob-timeline-id",
       user: "Bob",
       messages: [
@@ -54,62 +55,3 @@ describe("Feature: Retrieving user's timeline", () => {
     });
   });
 });
-
-const authGateway = new FakeAuthGateway();
-const timelineGateway = new FakeTimelineGateway();
-const testStateBuilder = stateBuilder();
-let store: AppStore;
-
-function givenExistingTimeline(timeline: {
-  user: string;
-  id: string;
-  messages: {
-    id: string;
-    text: string;
-    author: string;
-    publishedAt: string;
-  }[];
-}) {
-  timelineGateway.timelinesByUser.set(timeline.user, timeline);
-}
-
-async function whenRetrievingUserTimeline(userId: string) {
-  store = createStore(
-    {
-      timelineGateway,
-      authGateway,
-    },
-    testStateBuilder.build()
-  );
-  await store.dispatch(getUserTimeline({ userId }));
-}
-
-function thenTheTimelineOfUserShouldBeLoading(user: string) {
-  const isUserTimelineLoading = selectIsUserTimelineLoading(
-    user,
-    store.getState()
-  );
-  expect(isUserTimelineLoading).toBe(true);
-}
-
-function thenTheReceivedTimelineShouldBe(expectedTimeline: {
-  user: string;
-  id: string;
-  messages: {
-    id: string;
-    text: string;
-    author: string;
-    publishedAt: string;
-  }[];
-}) {
-  const expectedState = stateBuilder()
-    .withTimeline({
-      id: expectedTimeline.id,
-      user: expectedTimeline.user,
-      messages: expectedTimeline.messages.map((m) => m.id),
-    })
-    .withMessages(expectedTimeline.messages)
-    .withNotLoadingTimelineOf({ user: expectedTimeline.user })
-    .build();
-  expect(store.getState()).toEqual(expectedState);
-}
