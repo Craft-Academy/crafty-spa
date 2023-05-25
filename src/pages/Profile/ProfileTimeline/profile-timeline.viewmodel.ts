@@ -1,6 +1,6 @@
 import { format as timeAgo } from "timeago.js";
 import { RootState } from "@/lib/create-store";
-import { selectMessages } from "@/lib/timelines/slices/messages.slice";
+import { selectMessagesOrderedByPublicationDateDesc } from "@/lib/timelines/slices/messages.slice";
 import {
   selectIsUserTimelineLoading,
   selectTimelineForUser,
@@ -32,6 +32,7 @@ export const selectProfileTimelineViewModel =
         }
       | {
           type: ProfileTimelineViewModelType.WithMessages;
+          id: string;
           messages: {
             id: string;
             userId: string;
@@ -75,19 +76,21 @@ export const selectProfileTimelineViewModel =
       };
     }
 
-    const messages = selectMessages(timeline.messages, rootState).map(
-      (msg) => ({
-        id: msg.id,
-        userId: msg.author,
-        username: msg.author,
-        profilePictureUrl: `https://picsum.photos/200?random=${msg.author}`,
-        publishedAt: timeAgo(msg.publishedAt, "", { relativeDate: now }),
-        text: msg.text,
-      })
-    );
+    const messages = selectMessagesOrderedByPublicationDateDesc(
+      timeline.messages,
+      rootState
+    ).map((msg) => ({
+      id: msg.id,
+      userId: msg.author,
+      username: msg.author,
+      profilePictureUrl: `https://picsum.photos/200?random=${msg.author}`,
+      publishedAt: timeAgo(msg.publishedAt, "", { relativeDate: now }),
+      text: msg.text,
+    }));
 
     return {
       timeline: {
+        id: timeline.id,
         type: ProfileTimelineViewModelType.WithMessages,
         messages,
       },

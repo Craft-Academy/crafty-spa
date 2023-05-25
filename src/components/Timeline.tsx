@@ -24,7 +24,12 @@ export const Timeline = ({ userId }: { userId: string }) => {
       case ProfileTimelineViewModelType.EmptyTimeline:
         return <Text>{viewModel.timeline.info}</Text>;
       case ProfileTimelineViewModelType.WithMessages:
-        return <PostList messages={viewModel.timeline.messages} />;
+        return (
+          <PostList
+            messages={viewModel.timeline.messages}
+            timelineId={viewModel.timeline.id}
+          />
+        );
       default:
         return exhaustiveGuard(viewModel.timeline);
     }

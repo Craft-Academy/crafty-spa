@@ -92,6 +92,7 @@ describe("Profile timeline view model for Bob's profile", () => {
     expect(profileTimelineViewModel).toEqual({
       timeline: {
         type: ProfileTimelineViewModelType.WithMessages,
+        id: "bob-timeline-id",
         messages: [
           {
             id: "msg1-id",
@@ -106,7 +107,7 @@ describe("Profile timeline view model for Bob's profile", () => {
     });
   });
 
-  test("Example: there is multiple messages in the timeline", () => {
+  test("Example: there is multiple messages in the timeline : messages are displayed by published date desc", () => {
     const initialState = stateBuilder()
       .withTimeline({
         id: "bob-timeline-id",
@@ -143,16 +144,9 @@ describe("Profile timeline view model for Bob's profile", () => {
 
     expect(profileTimelineViewModel).toEqual({
       timeline: {
+        id: "bob-timeline-id",
         type: ProfileTimelineViewModelType.WithMessages,
         messages: [
-          {
-            id: "msg1-id",
-            userId: "Bob",
-            username: "Bob",
-            profilePictureUrl: "https://picsum.photos/200?random=Bob",
-            publishedAt: "26 minutes ago",
-            text: "Hi it's Bob !",
-          },
           {
             id: "msg2-id",
             userId: "Alice",
@@ -160,6 +154,14 @@ describe("Profile timeline view model for Bob's profile", () => {
             profilePictureUrl: "https://picsum.photos/200?random=Alice",
             publishedAt: "22 minutes ago",
             text: "Hi Bob !",
+          },
+          {
+            id: "msg1-id",
+            userId: "Bob",
+            username: "Bob",
+            profilePictureUrl: "https://picsum.photos/200?random=Bob",
+            publishedAt: "26 minutes ago",
+            text: "Hi it's Bob !",
           },
         ],
       },
