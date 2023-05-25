@@ -17,7 +17,7 @@ describe("Feature: Retrieving authenticated user's timeline", () => {
   it("Example: Alice is authenticated and can see her timeline", async () => {
     //arrange (given)
     authFixture.givenAuthenticatedUserIs("Alice");
-    fixture.givenExistingTimeline({
+    fixture.givenExistingRemoteTimeline({
       id: "alice-timeline-id",
       user: "Alice",
       messages: [

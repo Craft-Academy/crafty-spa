@@ -6,6 +6,7 @@ import {
 import { Timeline, timelinesAdapter } from "../model/timeline.entity";
 import { RootState } from "@/lib/create-store";
 import { getUserTimeline } from "../usecases/get-user-timeline.usecase";
+import { postMessage } from "../usecases/post-message.usecase";
 
 export type TimelinesSliceState = EntityState<Timeline> & {
   loadingTimelinesByUser: { [userId: string]: boolean };
@@ -29,6 +30,14 @@ export const timelinesSlice = createSlice({
         setUserTimelineLoadingState(state, {
           userId: action.meta.arg.userId,
           loading: true,
+        });
+      })
+      .addCase(postMessage.pending, (state, action) => {
+        timelinesAdapter.updateOne(state, {
+          id: action.meta.arg.timelineId,
+          changes: {
+            messages: [action.meta.arg.messageId],
+          },
         });
       })
       .addMatcher(

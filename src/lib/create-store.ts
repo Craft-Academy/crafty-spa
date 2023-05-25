@@ -10,10 +10,16 @@ import { FakeAuthGateway } from "./auth/infra/fake-auth.gateway";
 import { FakeTimelineGateway } from "./timelines/infra/fake-timeline.gateway";
 import { rootReducer } from "./root-reducer";
 import { onAuthStateChangedListener } from "./auth/listeners/on-auth-state-changed.listener";
+import { DateProvider } from "./timelines/model/date-provider";
+import { RealDateProvider } from "./timelines/infra/real-date-provider";
+import { MessageGateway } from "./timelines/model/message.gateway";
+import { FakeMessageGateway } from "./timelines/infra/fake-message.gateway";
 
 export type Dependencies = {
   authGateway: AuthGateway;
   timelineGateway: TimelineGateway;
+  messageGateway: MessageGateway;
+  dateProvider: DateProvider;
 };
 
 export const createStore = (
@@ -55,6 +61,8 @@ export const createTestStore = (
   {
     authGateway = new FakeAuthGateway(),
     timelineGateway = new FakeTimelineGateway(),
+    messageGateway = new FakeMessageGateway(),
+    dateProvider = new RealDateProvider(),
   }: Partial<Dependencies> = {},
   preloadedState?: Partial<ReturnType<typeof rootReducer>>
 ) =>
@@ -62,6 +70,8 @@ export const createTestStore = (
     {
       authGateway,
       timelineGateway,
+      messageGateway,
+      dateProvider,
     },
     preloadedState
   );

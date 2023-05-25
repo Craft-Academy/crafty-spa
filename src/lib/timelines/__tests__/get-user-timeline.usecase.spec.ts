@@ -10,7 +10,7 @@ describe("Feature: Retrieving user's timeline", () => {
 
   it("Example: We are on Bob profile", async () => {
     //arrange (given)
-    fixture.givenExistingTimeline({
+    fixture.givenExistingRemoteTimeline({
       id: "bob-timeline-id",
       user: "Bob",
       messages: [
