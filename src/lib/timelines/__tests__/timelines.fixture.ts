@@ -6,7 +6,6 @@ import { AppStore, createTestStore } from "@/lib/create-store";
 import { selectIsUserTimelineLoading } from "../slices/timelines.slice";
 import { getUserTimeline } from "../usecases/get-user-timeline.usecase";
 import { selectAuthUser } from "@/lib/auth/reducer";
-import { Timeline } from "../model/timeline.entity";
 import {
   PostMessageParams,
   postMessage,
@@ -14,7 +13,7 @@ import {
 import { StubDateProvider } from "../infra/stub-date-provider";
 import { FakeMessageGateway } from "../infra/fake-message.gateway";
 
-type ExpectedTimeline = {
+type Timeline = {
   user: string;
   id: string;
   messages: {
@@ -53,7 +52,12 @@ export const createTimelinesFixture = (
     givenTimeline(timeline: Timeline) {
       testStateBuilderProvider.setState((builder) =>
         builder
-          .withTimeline(timeline)
+          .withTimeline({
+            id: timeline.id,
+            user: timeline.user,
+            messages: timeline.messages.map((m) => m.id),
+          })
+          .withMessages(timeline.messages)
           .withNotLoadingTimelineOf({ user: timeline.user })
       );
     },
@@ -85,7 +89,7 @@ export const createTimelinesFixture = (
       );
       expect(isUserTimelineLoading).toBe(true);
     },
-    thenTheReceivedTimelineShouldBe(expectedTimeline: ExpectedTimeline) {
+    thenTheReceivedTimelineShouldBe(expectedTimeline: Timeline) {
       this.thenTimelineShouldBe(expectedTimeline);
     },
     thenMessageShouldHaveBeenPosted(expectedPostedMessage: {
@@ -97,7 +101,7 @@ export const createTimelinesFixture = (
     }) {
       expect(messageGateway.lastPostedMessage).toEqual(expectedPostedMessage);
     },
-    thenTimelineShouldBe(expectedTimeline: ExpectedTimeline) {
+    thenTimelineShouldBe(expectedTimeline: Timeline) {
       const expectedState = stateBuilder(testStateBuilderProvider.getState())
         .withTimeline({
           id: expectedTimeline.id,
