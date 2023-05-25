@@ -1,8 +1,10 @@
 import {
   AnyAction,
+  AsyncThunk,
   Middleware,
   ThunkDispatch,
   configureStore,
+  isAsyncThunkAction,
 } from "@reduxjs/toolkit";
 import { AuthGateway } from "./auth/model/auth.gateway";
 import { TimelineGateway } from "./timelines/model/timeline.gateway";
@@ -65,8 +67,8 @@ export const createTestStore = (
     dateProvider = new RealDateProvider(),
   }: Partial<Dependencies> = {},
   preloadedState?: Partial<ReturnType<typeof rootReducer>>
-) =>
-  createStore(
+) => {
+  const store = createStore(
     {
       authGateway,
       timelineGateway,
@@ -75,6 +77,22 @@ export const createTestStore = (
     },
     preloadedState
   );
+
+  return {
+    ...store,
+    getDispatchedUseCaseArgs(useCase: AsyncThunk<any, any, any>) {
+      const pendingUseCaseAction = store
+        .getActions()
+        .find((a) => a.type === useCase.pending.toString());
+
+      if (!pendingUseCaseAction) return;
+
+      if (!isAsyncThunkAction(pendingUseCaseAction)) return;
+
+      return pendingUseCaseAction.meta.arg;
+    },
+  };
+};
 
 type AppStoreWithGetActions = ReturnType<typeof createStore>;
 export type AppStore = Omit<AppStoreWithGetActions, "getActions">;

@@ -1,17 +1,19 @@
 import { AppDispatch } from "@/lib/create-store";
-import { postMessage } from "@/lib/timelines/usecases/post-message.usecase";
 import {
   Avatar,
   Button,
   Flex,
   FormControl,
   Stack,
+  Text,
+  TextProps,
   Textarea,
 } from "@chakra-ui/react";
 import { nanoid } from "@reduxjs/toolkit";
-import { FormEvent, useRef } from "react";
+import { ChangeEvent, FormEvent, useRef, useState } from "react";
 import { useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
+import { createAddPostFormViewModel } from "./add-post-form.viewmodel";
 
 interface AddPostFormElements extends HTMLFormControlsCollection {
   text: HTMLTextAreaElement;
@@ -28,14 +30,29 @@ export const AddPostForm = ({
   placeholder: string;
   timelineId: string;
 }) => {
-  const textarea = useRef<HTMLTextAreaElement>(null);
+  const [charactersCount, setCharactersCount] = useState(0);
   const dispatch = useDispatch<AppDispatch>();
+  const {
+    postMessage,
+    handleTextChange,
+    canSubmit,
+    remaining,
+    inputBackroundColor,
+    charCounterColor,
+  } = createAddPostFormViewModel({
+    dispatch,
+    messageId: nanoid(5),
+    timelineId,
+    maxCharacters: 100,
+    charactersCount,
+    setCharactersCount,
+  });
+  const textarea = useRef<HTMLTextAreaElement>(null);
 
   const handleSubmit = (event: FormEvent<IAddPostForm>) => {
     event.preventDefault();
-    const messageId = nanoid(5);
     const text = event.currentTarget.elements.text.value;
-    dispatch(postMessage({ messageId, text, timelineId }));
+    postMessage(text);
     if (textarea.current) {
       textarea.current.value = "";
     }
@@ -53,16 +70,38 @@ export const AddPostForm = ({
             rows={3}
             resize="none"
             placeholder={placeholder}
+            bgColor={inputBackroundColor}
             name="text"
+            onChange={(event: ChangeEvent<HTMLTextAreaElement>) => {
+              handleTextChange(event.target.value);
+            }}
             required
           />
         </FormControl>
       </Stack>
       <Flex direction="row-reverse" py="4" px={{ base: "4", md: "6" }}>
-        <Button colorScheme="twitter" type="submit" variant="solid">
+        <Button
+          colorScheme="twitter"
+          type="submit"
+          variant="solid"
+          isDisabled={!canSubmit}
+        >
           Post message
         </Button>
+        <MaxCharCounter
+          remaining={remaining}
+          color={charCounterColor}
+          alignSelf="center"
+          mr={5}
+        />
       </Flex>
     </form>
   );
 };
+
+const MaxCharCounter = ({
+  remaining,
+  ...textProps
+}: {
+  remaining: number;
+} & TextProps) => <Text {...textProps}>{remaining}</Text>;

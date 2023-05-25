@@ -1,5 +1,5 @@
 import { Box, Center, Stack, StackDivider } from "@chakra-ui/react";
-import { AddPostForm } from "./AddPostForm";
+import { AddPostForm } from "./AddPostForm/AddPostForm";
 import { Post } from "./Post";
 
 export const PostList = ({
