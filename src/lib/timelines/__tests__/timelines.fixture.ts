@@ -12,6 +12,8 @@ import {
 } from "../usecases/post-message.usecase";
 import { StubDateProvider } from "../infra/stub-date-provider";
 import { FakeMessageGateway } from "../infra/fake-message.gateway";
+import { FailingMessageGateway } from "../infra/failing-message.gateway";
+import { MessageGateway } from "../model/message.gateway";
 
 type Timeline = {
   user: string;
@@ -29,7 +31,7 @@ export const createTimelinesFixture = (
 ) => {
   const authGateway = new FakeAuthGateway();
   const timelineGateway = new FakeTimelineGateway();
-  const messageGateway = new FakeMessageGateway();
+  let messageGateway: MessageGateway = new FakeMessageGateway();
   const dateProvider = new StubDateProvider();
   let store: AppStore;
 
@@ -60,6 +62,9 @@ export const createTimelinesFixture = (
           .withMessages(timeline.messages)
           .withNotLoadingTimelineOf({ user: timeline.user })
       );
+    },
+    givenPostMessageWillFailWithError(error: string) {
+      messageGateway = new FailingMessageGateway(error);
     },
     async whenRetrievingUserTimeline(userId: string) {
       store = createTestStore(
@@ -99,19 +104,30 @@ export const createTimelinesFixture = (
       text: string;
       publishedAt: string;
     }) {
-      expect(messageGateway.lastPostedMessage).toEqual(expectedPostedMessage);
+      expect((messageGateway as FakeMessageGateway).lastPostedMessage).toEqual(
+        expectedPostedMessage
+      );
     },
-    thenTimelineShouldBe(expectedTimeline: Timeline) {
-      const expectedState = stateBuilder(testStateBuilderProvider.getState())
+    thenTimelineShouldBe(
+      expectedTimeline: Timeline & {
+        messageNotPosted?: { messageId: string; error: string };
+      }
+    ) {
+      let expectedState = stateBuilder(testStateBuilderProvider.getState())
         .withTimeline({
           id: expectedTimeline.id,
           user: expectedTimeline.user,
           messages: expectedTimeline.messages.map((m) => m.id),
         })
         .withMessages(expectedTimeline.messages)
-        .withNotLoadingTimelineOf({ user: expectedTimeline.user })
-        .build();
-      expect(store.getState()).toEqual(expectedState);
+        .withNotLoadingTimelineOf({ user: expectedTimeline.user });
+
+      if (expectedTimeline.messageNotPosted !== undefined) {
+        expectedState = expectedState.withMessageNotPosted(
+          expectedTimeline.messageNotPosted
+        );
+      }
+      expect(store.getState()).toEqual(expectedState.build());
     },
   };
 };
