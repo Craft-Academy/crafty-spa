@@ -129,4 +129,44 @@ describe("Feature: Posting a message on a timeline", () => {
       messageNotPosted: { messageId: "msg1-id", error: "Cannot post message" },
     });
   });
+
+  test("Example: Alice successfully retries to post a message", async () => {
+    authFixture.givenAuthenticatedUserIs("Alice");
+    fixture.givenNowIs(new Date("2023-05-26T10:00:00.000Z"));
+    fixture.givenTimeline({
+      id: "alice-timeline-id",
+      user: "Alice",
+      messages: [
+        {
+          id: "msg1-id",
+          author: "Alice",
+          text: "Hello it's Alice",
+          publishedAt: "2023-05-26T09:59:00.000Z",
+        },
+      ],
+    });
+    fixture.givenMessageHasFailedToBePosted({
+      messageId: "msg1-id",
+      error: "Cannot post message",
+    });
+    -(await fixture.whenUserPostsMessage({
+      messageId: "msg1-id",
+      timelineId: "alice-timeline-id",
+      text: "Hello it's Alice",
+    }));
+
+    fixture.thenTimelineShouldBe({
+      id: "alice-timeline-id",
+      user: "Alice",
+      messages: [
+        {
+          id: "msg1-id",
+          text: "Hello it's Alice",
+          author: "Alice",
+          publishedAt: "2023-05-26T10:00:00.000Z",
+        },
+      ],
+      messageNotPosted: undefined,
+    });
+  });
 });

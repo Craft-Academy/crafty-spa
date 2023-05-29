@@ -22,6 +22,7 @@ export const messagesSlice = createSlice({
     builder
       .addCase(postMessagePending, (state, action) => {
         messagesAdapter.addOne(state, action.payload);
+        delete state.messagesNotPosted[action.payload.id];
       })
       .addCase(postMessage.rejected, (state, action) => {
         state.messagesNotPosted[action.meta.arg.messageId] =
@@ -52,3 +53,8 @@ export const selectMessagesOrderedByPublicationDateDesc = (
 
   return messages;
 };
+
+export const selectErrorMessage = (
+  id: string,
+  state: RootState
+): string | undefined => state.timelines.messages.messagesNotPosted[id];

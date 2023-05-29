@@ -1,18 +1,20 @@
 import {
   ProfileTimelineViewModelType,
-  selectProfileTimelineViewModel,
+  createProfileTimelineViewModel,
 } from "@/pages/Profile/ProfileTimeline/profile-timeline.viewmodel";
 import { Text } from "@chakra-ui/react";
 import { ReactNode } from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { PostList } from "./PostList";
 import { exhaustiveGuard } from "@/lib/common/utils/exhaustive-guard";
+import { AppDispatch } from "@/lib/create-store";
 
 const getNow = () => new Date().toISOString();
 
 export const Timeline = ({ userId }: { userId: string }) => {
+  const dispatch = useDispatch<AppDispatch>();
   const viewModel = useSelector(
-    selectProfileTimelineViewModel({ userId, getNow })
+    createProfileTimelineViewModel({ userId, getNow, dispatch })
   );
 
   const timelineNode: ReactNode = (() => {

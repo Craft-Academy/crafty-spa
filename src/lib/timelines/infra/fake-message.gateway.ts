@@ -1,6 +1,7 @@
 import { MessageGateway } from "../model/message.gateway";
 
 export class FakeMessageGateway implements MessageGateway {
+  postMessageCount = 0;
   lastPostedMessage!: {
     id: string;
     author: string;
@@ -16,6 +17,8 @@ export class FakeMessageGateway implements MessageGateway {
     timelineId: string;
   }): Promise<void> {
     this.lastPostedMessage = message;
-    return Promise.resolve();
+    return this.postMessageCount++ % 2 === 0
+      ? Promise.resolve()
+      : Promise.reject(new Error("Cannot send message. Please retry later"));
   }
 }

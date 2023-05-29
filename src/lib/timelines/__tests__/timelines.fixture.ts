@@ -66,6 +66,20 @@ export const createTimelinesFixture = (
     givenPostMessageWillFailWithError(error: string) {
       messageGateway = new FailingMessageGateway(error);
     },
+    givenMessageHasFailedToBePosted({
+      messageId,
+      error,
+    }: {
+      messageId: string;
+      error: string;
+    }) {
+      testStateBuilderProvider.setState((builder) =>
+        builder.withMessageNotPosted({
+          messageId,
+          error,
+        })
+      );
+    },
     async whenRetrievingUserTimeline(userId: string) {
       store = createTestStore(
         {
@@ -122,11 +136,12 @@ export const createTimelinesFixture = (
         .withMessages(expectedTimeline.messages)
         .withNotLoadingTimelineOf({ user: expectedTimeline.user });
 
-      if (expectedTimeline.messageNotPosted !== undefined) {
-        expectedState = expectedState.withMessageNotPosted(
-          expectedTimeline.messageNotPosted
-        );
-      }
+      expectedState =
+        expectedTimeline.messageNotPosted === undefined
+          ? expectedState.withNoMessagesHavingFailedToBePosted(undefined)
+          : expectedState.withMessageNotPosted(
+              expectedTimeline.messageNotPosted
+            );
       expect(store.getState()).toEqual(expectedState.build());
     },
   };

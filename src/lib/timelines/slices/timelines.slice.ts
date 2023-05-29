@@ -40,7 +40,12 @@ export const timelinesSlice = createSlice({
         timelinesAdapter.updateOne(state, {
           id: timeline.id,
           changes: {
-            messages: [...timeline.messages, action.meta.arg.messageId],
+            messages: [
+              ...timeline.messages,
+              timeline.messages.includes(action.meta.arg.messageId)
+                ? undefined
+                : action.meta.arg.messageId,
+            ].filter(Boolean),
           },
         });
       })

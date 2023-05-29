@@ -1,10 +1,14 @@
 import { format as timeAgo } from "timeago.js";
-import { RootState } from "@/lib/create-store";
-import { selectMessagesOrderedByPublicationDateDesc } from "@/lib/timelines/slices/messages.slice";
+import { AppDispatch, RootState } from "@/lib/create-store";
+import {
+  selectErrorMessage,
+  selectMessagesOrderedByPublicationDateDesc,
+} from "@/lib/timelines/slices/messages.slice";
 import {
   selectIsUserTimelineLoading,
   selectTimelineForUser,
 } from "@/lib/timelines/slices/timelines.slice";
+import { postMessage } from "@/lib/timelines/usecases/post-message.usecase";
 
 export enum ProfileTimelineViewModelType {
   NoTimeline = "NO_TIMELINE",
@@ -13,8 +17,16 @@ export enum ProfileTimelineViewModelType {
   WithMessages = "TIMELINE_WITH_MESSAGES",
 }
 
-export const selectProfileTimelineViewModel =
-  ({ userId, getNow }: { userId: string; getNow: () => string }) =>
+export const createProfileTimelineViewModel =
+  ({
+    userId,
+    getNow,
+    dispatch,
+  }: {
+    userId: string;
+    getNow: () => string;
+    dispatch: AppDispatch;
+  }) =>
   (
     rootState: RootState
   ): {
@@ -40,6 +52,10 @@ export const selectProfileTimelineViewModel =
             profilePictureUrl: string;
             publishedAt: string;
             text: string;
+            failedToBePosted: boolean;
+            backgroundColor: string;
+            errorMessage?: string;
+            retryToPostMessage: () => void;
           }[];
         };
   } => {
@@ -79,14 +95,30 @@ export const selectProfileTimelineViewModel =
     const messages = selectMessagesOrderedByPublicationDateDesc(
       timeline.messages,
       rootState
-    ).map((msg) => ({
-      id: msg.id,
-      userId: msg.author,
-      username: msg.author,
-      profilePictureUrl: `https://picsum.photos/200?random=${msg.author}`,
-      publishedAt: timeAgo(msg.publishedAt, "", { relativeDate: now }),
-      text: msg.text,
-    }));
+    ).map((msg) => {
+      const maybeErrorMessage = selectErrorMessage(msg.id, rootState);
+      const failedToBePosted = maybeErrorMessage !== undefined;
+      const retryToPostMessage = () =>
+        dispatch(
+          postMessage({
+            messageId: msg.id,
+            text: msg.text,
+            timelineId: timeline.id,
+          })
+        );
+      return {
+        id: msg.id,
+        userId: msg.author,
+        username: msg.author,
+        profilePictureUrl: `https://picsum.photos/200?random=${msg.author}`,
+        publishedAt: timeAgo(msg.publishedAt, "", { relativeDate: now }),
+        text: msg.text,
+        failedToBePosted,
+        backgroundColor: failedToBePosted ? "red.50" : "white",
+        errorMessage: maybeErrorMessage,
+        retryToPostMessage,
+      };
+    });
 
     return {
       timeline: {

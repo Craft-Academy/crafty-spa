@@ -14,6 +14,10 @@ export const PostList = ({
     publishedAt: string;
     text: string;
     userId: string;
+    failedToBePosted: boolean;
+    backgroundColor: string;
+    errorMessage?: string;
+    retryToPostMessage: () => void;
   }[];
   timelineId: string;
   addPostPlaceholder?: string;
