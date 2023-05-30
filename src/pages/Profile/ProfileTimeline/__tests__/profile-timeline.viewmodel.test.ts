@@ -6,6 +6,7 @@ import {
   createProfileTimelineViewModel,
 } from "../profile-timeline.viewmodel";
 import { postMessage } from "@/lib/timelines/usecases/post-message.usecase";
+import { buildUser } from "@/lib/users/__tests__/user.builder";
 
 type MessageView = {
   id: string;
@@ -114,10 +115,15 @@ describe("Profile timeline view model for Bob's profile", () => {
   });
 
   test("Example: there is one message in the timeline", () => {
+    const bob = buildUser({
+      id: "bob-id",
+      username: "Bob",
+      profilePicture: "bob.png",
+    });
     const initialState = stateBuilder()
       .withTimeline({
         id: "bob-timeline-id",
-        user: "Bob",
+        user: "bob-id",
         messages: ["msg1-id"],
       })
       .withMessages([
@@ -128,20 +134,12 @@ describe("Profile timeline view model for Bob's profile", () => {
           text: "Hi it's Bob !",
         },
       ])
-      .withUsers([
-        {
-          id: "bob-id",
-          username: "Bob",
-          profilePicture: "bob.png",
-          followersCount: 10,
-          followingCount: 5,
-        },
-      ])
+      .withUsers([bob])
       .build();
     const store = createTestStore({}, initialState);
 
     const profileTimelineViewModel = createTestProfileTimelineViewModel({
-      userId: "Bob",
+      userId: "bob-id",
       getNow: () => "2023-05-17T11:21:00.000Z",
     })(store.getState());
 
@@ -165,6 +163,16 @@ describe("Profile timeline view model for Bob's profile", () => {
   });
 
   test("Example: there is multiple messages in the timeline : messages are displayed by published date desc", () => {
+    const bob = buildUser({
+      id: "bob-id",
+      username: "Bob",
+      profilePicture: "bob.png",
+    });
+    const alice = buildUser({
+      id: "alice-id",
+      username: "Alice",
+      profilePicture: "alice.png",
+    });
     const initialState = stateBuilder()
       .withTimeline({
         id: "bob-timeline-id",
@@ -191,22 +199,7 @@ describe("Profile timeline view model for Bob's profile", () => {
           text: "Charles' message",
         },
       ])
-      .withUsers([
-        {
-          id: "bob-id",
-          username: "Bob",
-          profilePicture: "bob.png",
-          followersCount: 10,
-          followingCount: 5,
-        },
-        {
-          id: "alice-id",
-          username: "Alice",
-          profilePicture: "alice.png",
-          followersCount: 10,
-          followingCount: 5,
-        },
-      ])
+      .withUsers([bob, alice])
       .build();
     const store = createTestStore({}, initialState);
 
@@ -241,6 +234,11 @@ describe("Profile timeline view model for Bob's profile", () => {
     });
   });
   test("Example: the message could not have been posted", () => {
+    const bob = buildUser({
+      id: "bob-id",
+      username: "Bob",
+      profilePicture: "bob.png",
+    });
     const initialState = stateBuilder()
       .withTimeline({
         id: "bob-timeline-id",
@@ -259,15 +257,7 @@ describe("Profile timeline view model for Bob's profile", () => {
         messageId: "msg1-id",
         error: "Cannot post message",
       })
-      .withUsers([
-        {
-          id: "bob-id",
-          username: "Bob",
-          profilePicture: "bob.png",
-          followersCount: 10,
-          followingCount: 5,
-        },
-      ])
+      .withUsers([bob])
       .build();
     const store = createTestStore({}, initialState);
 
@@ -298,6 +288,11 @@ describe("Profile timeline view model for Bob's profile", () => {
   });
 
   test("Example: the message not posted can be retried", () => {
+    const bob = buildUser({
+      id: "bob-id",
+      username: "Bob",
+      profilePicture: "bob.png",
+    });
     const initialState = stateBuilder()
       .withTimeline({
         id: "bob-timeline-id",
@@ -316,15 +311,7 @@ describe("Profile timeline view model for Bob's profile", () => {
         messageId: "msg1-id",
         error: "Cannot post message",
       })
-      .withUsers([
-        {
-          id: "bob-id",
-          username: "Bob",
-          profilePicture: "bob.png",
-          followersCount: 10,
-          followingCount: 5,
-        },
-      ])
+      .withUsers([bob])
       .build();
     const store = createTestStore({}, initialState);
 

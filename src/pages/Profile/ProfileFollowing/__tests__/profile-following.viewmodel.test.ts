@@ -4,6 +4,7 @@ import {
   createProfileFollowingViewModel,
 } from "../profile-following.viewmodel";
 import { stateBuilder } from "@/lib/state-builder";
+import { buildUser } from "@/lib/users/__tests__/user.builder";
 
 describe("ProfileFollowing view model", () => {
   test("Example: Charles following are loading", () => {
@@ -17,27 +18,24 @@ describe("ProfileFollowing view model", () => {
   });
 
   test("Example: Charles following are loaded", () => {
+    const alice = buildUser({
+      id: "alice-id",
+      username: "Alice",
+      profilePicture: "alice.png",
+      followersCount: 15,
+    });
+    const bob = buildUser({
+      id: "bob-id",
+      username: "Bob",
+      profilePicture: "bob.png",
+      followersCount: 10,
+    });
     const profileFollowingViewModel = createProfileFollowingViewModel({
       of: "Charles",
     })(
       stateBuilder()
-        .withFollowing({ of: "Charles", following: ["bob", "alice"] })
-        .withUsers([
-          {
-            id: "bob",
-            username: "Bob",
-            profilePicture: "bob.png",
-            followersCount: 10,
-            followingCount: 12,
-          },
-          {
-            id: "alice",
-            username: "Alice",
-            profilePicture: "alice.png",
-            followersCount: 15,
-            followingCount: 5,
-          },
-        ])
+        .withFollowing({ of: "Charles", following: ["bob-id", "alice-id"] })
+        .withUsers([bob, alice])
         .build()
     );
 
@@ -45,18 +43,18 @@ describe("ProfileFollowing view model", () => {
       type: ProfileFollowingViewModelType.ProfileFollowingLoaded,
       following: [
         {
-          id: "bob",
+          id: "bob-id",
           username: "Bob",
           profilePicture: "bob.png",
           followersCount: 10,
-          link: "/u/bob",
+          link: "/u/bob-id",
         },
         {
-          id: "alice",
+          id: "alice-id",
           username: "Alice",
           profilePicture: "alice.png",
           followersCount: 15,
-          link: "/u/alice",
+          link: "/u/alice-id",
         },
       ],
     });
