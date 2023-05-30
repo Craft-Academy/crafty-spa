@@ -1,5 +1,9 @@
-import { AppStore, createTestStore } from "@/lib/create-store";
-import { stateBuilder } from "@/lib/state-builder";
+import { AppStore, RootState, createTestStore } from "@/lib/create-store";
+import {
+  StateBuilderProvider,
+  stateBuilder,
+  stateBuilderProvider,
+} from "@/lib/state-builder";
 import { expect } from "vitest";
 import { getUserFollowers } from "../usecases/get-followers.usecase";
 import { FakeUserGateway } from "../infra/fake-user.gateway";
@@ -9,16 +13,30 @@ import {
   selectAreFollowersOfLoading,
   selectAreFollowingOfLoading,
 } from "../slices/relationships.slice";
-import { selectIsUserLoading, selectUser } from "../slices/users.slice";
+import { selectIsUserLoading } from "../slices/users.slice";
 import { getUser } from "../usecases/get-user.usecase";
+import { followUser } from "../usecases/follow-user.usecase";
+import { unfollowUser } from "../usecases/unfollow-user.usecase";
 
-export const createUsersFixture = () => {
+export const createUsersFixture = (
+  testStateBuilderProvider: StateBuilderProvider = stateBuilderProvider()
+) => {
   let store: AppStore;
-  let currentStateBuilder = stateBuilder();
   const userGateway = new FakeUserGateway();
   return {
     givenExistingUsers(users: User[]) {
-      currentStateBuilder = currentStateBuilder.withUsers(users);
+      testStateBuilderProvider.setState((builder) => builder.withUsers(users));
+    },
+    givenUserFollows({
+      user,
+      followingId,
+    }: {
+      user: string;
+      followingId: string;
+    }) {
+      testStateBuilderProvider.setState((builder) =>
+        builder.withFollowing({ of: user, following: [followingId] })
+      );
     },
     givenExistingRemoteUser(user: User) {
       userGateway.users.set(user.id, user);
@@ -47,12 +65,32 @@ export const createUsersFixture = () => {
       return store.dispatch(getUser({ userId }));
     },
     async whenRetrievingFollowersOf(of: string) {
-      store = createTestStore({ userGateway }, currentStateBuilder.build());
+      store = createTestStore(
+        { userGateway },
+        testStateBuilderProvider.getState()
+      );
       return store.dispatch(getUserFollowers({ userId: of }));
     },
     async whenRetrievingFollowingOf(of: string) {
-      store = createTestStore({ userGateway }, currentStateBuilder.build());
+      store = createTestStore(
+        { userGateway },
+        testStateBuilderProvider.getState()
+      );
       return store.dispatch(getUserFollowing({ userId: of }));
+    },
+    async whenUserFollows({ followingId }: { followingId: string }) {
+      store = createTestStore(
+        { userGateway },
+        testStateBuilderProvider.getState()
+      );
+      return store.dispatch(followUser({ followingId }));
+    },
+    async whenUserUnfollows({ followingId }: { followingId: string }) {
+      store = createTestStore(
+        { userGateway },
+        testStateBuilderProvider.getState()
+      );
+      return store.dispatch(unfollowUser({ followingId }));
     },
     thenUserShouldBeLoading(userId: string) {
       const isLoading = selectIsUserLoading(userId, store.getState());
@@ -105,6 +143,28 @@ export const createUsersFixture = () => {
         .withFollowingNotLoading({ of })
         .build();
 
+      expect(expectedState).toEqual(store.getState());
+    },
+    thenShouldHaveFollowed({
+      user,
+      followingId,
+    }: {
+      user: string;
+      followingId: string;
+    }) {
+      expect(userGateway.lastFollowedUserBy).toEqual({ user, followingId });
+    },
+    thenShouldHaveUnfollowed({
+      user,
+      followingId,
+    }: {
+      user: string;
+      followingId: string;
+    }) {
+      expect(userGateway.lastUnfollowedUserBy).toEqual({ user, followingId });
+    },
+    thenAppStateShouldBe(expectedState: RootState) {
+      console.log(expectedState);
       expect(expectedState).toEqual(store.getState());
     },
   };

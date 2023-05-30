@@ -8,6 +8,7 @@ import {
   users,
   followersByUser,
   followingByUser,
+  isAuthUserFollowsUser,
 } from "@/lib/fake-data";
 
 export class FakeDataTimelineGateway implements TimelineGateway {
@@ -35,6 +36,7 @@ export class FakeDataTimelineGateway implements TimelineGateway {
             author: {
               id: author.id,
               username: author.username,
+              isFollowedByAuthUser: isAuthUserFollowsUser(user.id),
               profilePicture: author.profilePicture,
               followersCount: (followersByUser.get(author.id) ?? []).length,
               followingCount: (followingByUser.get(author.id) ?? []).length,
@@ -52,6 +54,7 @@ export class FakeDataTimelineGateway implements TimelineGateway {
               id: user.id,
               username: user.username,
               profilePicture: user.profilePicture,
+              isFollowedByAuthUser: isAuthUserFollowsUser(user.id),
               followersCount: (followersByUser.get(user.id) ?? []).length,
               followingCount: (followingByUser.get(user.id) ?? []).length,
             },

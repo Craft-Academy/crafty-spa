@@ -20,6 +20,7 @@ export type ProfileFollowingViewModel =
         id: string;
         username: string;
         followersCount: number;
+        isFollowedByAuthUser: boolean;
         profilePicture: string;
         link: string;
       }[];
@@ -49,8 +50,9 @@ export const createProfileFollowingViewModel =
           return {
             id: followingId,
             username: user.username,
-            profilePicture: user.profilePicture,
             followersCount: user.followersCount,
+            isFollowedByAuthUser: user.isFollowedByAuthUser,
+            profilePicture: user.profilePicture,
             link: `/u/${followingId}`,
           };
         })

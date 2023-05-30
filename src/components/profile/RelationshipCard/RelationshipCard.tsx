@@ -4,6 +4,10 @@ import { FollowersCount } from "./FollowersCount";
 import { UserInfo } from "./UserInfo";
 import { Link } from "react-router-dom";
 import { HiOutlineUserPlus } from "react-icons/hi2";
+import { useDispatch } from "react-redux";
+import { AppDispatch } from "@/lib/create-store";
+import { followUser } from "@/lib/users/usecases/follow-user.usecase";
+import { unfollowUser } from "@/lib/users/usecases/unfollow-user.usecase";
 
 export const RelationshipCard = (user: {
   id: string;
@@ -20,7 +24,15 @@ export const RelationshipCard = (user: {
     size: "sm",
     width: "full",
   };
+  const dispatch = useDispatch<AppDispatch>();
   const buttonStyles = useMultiStyleConfig("Button", buttonProps);
+  const handleFollowUser = () => {
+    dispatch(followUser({ followingId: user.id }));
+  };
+
+  const handleUnfollowUser = () => {
+    dispatch(unfollowUser({ followingId: user.id }));
+  };
 
   return (
     <CardWithAvatar
@@ -49,9 +61,14 @@ export const RelationshipCard = (user: {
                 content: "'Unfollow'",
               },
             }}
+            onClick={handleUnfollowUser}
           />
         ) : (
-          <Button {...buttonProps} leftIcon={<HiOutlineUserPlus />}>
+          <Button
+            {...buttonProps}
+            leftIcon={<HiOutlineUserPlus />}
+            onClick={handleFollowUser}
+          >
             Follow
           </Button>
         )}

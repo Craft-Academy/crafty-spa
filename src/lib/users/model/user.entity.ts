@@ -6,6 +6,7 @@ export type User = {
   profilePicture: string;
   followersCount: number;
   followingCount: number;
+  isFollowedByAuthUser: boolean;
 };
 
 export const usersAdapter = createEntityAdapter<User>();

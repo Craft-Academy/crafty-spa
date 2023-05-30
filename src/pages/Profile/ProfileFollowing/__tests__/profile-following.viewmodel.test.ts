@@ -23,12 +23,14 @@ describe("ProfileFollowing view model", () => {
       username: "Alice",
       profilePicture: "alice.png",
       followersCount: 15,
+      isFollowedByAuthUser: false,
     });
     const bob = buildUser({
       id: "bob-id",
       username: "Bob",
       profilePicture: "bob.png",
       followersCount: 10,
+      isFollowedByAuthUser: true,
     });
     const profileFollowingViewModel = createProfileFollowingViewModel({
       of: "Charles",
@@ -47,6 +49,7 @@ describe("ProfileFollowing view model", () => {
           username: "Bob",
           profilePicture: "bob.png",
           followersCount: 10,
+          isFollowedByAuthUser: true,
           link: "/u/bob-id",
         },
         {
@@ -54,6 +57,7 @@ describe("ProfileFollowing view model", () => {
           username: "Alice",
           profilePicture: "alice.png",
           followersCount: 15,
+          isFollowedByAuthUser: false,
           link: "/u/alice-id",
         },
       ],
