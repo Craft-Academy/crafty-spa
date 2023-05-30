@@ -15,11 +15,17 @@ describe("Feature: Posting a message on a timeline", () => {
     authFixture = createAuthFixture(testStateBuilderProvider);
   });
   test("Example: Alice can post a message on her empty timeline", async () => {
-    authFixture.givenAuthenticatedUserIs("Alice");
+    authFixture.givenAuthenticatedUserIs("alice-id");
     fixture.givenNowIs(new Date("2023-05-26T10:00:00.000Z"));
     fixture.givenTimeline({
       id: "alice-timeline-id",
-      user: "Alice",
+      user: {
+        id: "alice-id",
+        username: "Alice",
+        profilePicture: "alice.png",
+        followersCount: 42,
+        followingCount: 20,
+      },
       messages: [],
     });
 
@@ -32,18 +38,30 @@ describe("Feature: Posting a message on a timeline", () => {
     fixture.thenMessageShouldHaveBeenPosted({
       id: "msg1-id",
       timelineId: "alice-timeline-id",
-      author: "Alice",
+      author: "alice-id",
       text: "Hello it's Alice",
       publishedAt: "2023-05-26T10:00:00.000Z",
     });
     fixture.thenTimelineShouldBe({
       id: "alice-timeline-id",
-      user: "Alice",
+      user: {
+        id: "alice-id",
+        username: "Alice",
+        profilePicture: "alice.png",
+        followersCount: 42,
+        followingCount: 20,
+      },
       messages: [
         {
           id: "msg1-id",
           text: "Hello it's Alice",
-          author: "Alice",
+          author: {
+            id: "alice-id",
+            username: "Alice",
+            profilePicture: "alice.png",
+            followersCount: 42,
+            followingCount: 20,
+          },
           publishedAt: "2023-05-26T10:00:00.000Z",
         },
       ],
@@ -51,16 +69,28 @@ describe("Feature: Posting a message on a timeline", () => {
   });
 
   test("Example: Alice can post a message on her timeline already containing messages", async () => {
-    authFixture.givenAuthenticatedUserIs("Alice");
+    authFixture.givenAuthenticatedUserIs("alice-id");
     fixture.givenNowIs(new Date("2023-05-26T11:00:00.000Z"));
     fixture.givenTimeline({
       id: "alice-timeline-id",
-      user: "Alice",
+      user: {
+        id: "alice-id",
+        username: "Alice",
+        profilePicture: "alice.png",
+        followersCount: 42,
+        followingCount: 20,
+      },
       messages: [
         {
           id: "msg1-id",
           text: "Hello it's Alice",
-          author: "Alice",
+          author: {
+            id: "alice-id",
+            username: "Alice",
+            profilePicture: "alice.png",
+            followersCount: 42,
+            followingCount: 20,
+          },
           publishedAt: "2023-05-26T10:00:00.000Z",
         },
       ],
@@ -75,24 +105,42 @@ describe("Feature: Posting a message on a timeline", () => {
     fixture.thenMessageShouldHaveBeenPosted({
       id: "msg2-id",
       timelineId: "alice-timeline-id",
-      author: "Alice",
+      author: "alice-id",
       text: "Hello again",
       publishedAt: "2023-05-26T11:00:00.000Z",
     });
     fixture.thenTimelineShouldBe({
       id: "alice-timeline-id",
-      user: "Alice",
+      user: {
+        id: "alice-id",
+        username: "Alice",
+        profilePicture: "alice.png",
+        followersCount: 42,
+        followingCount: 20,
+      },
       messages: [
         {
           id: "msg1-id",
           text: "Hello it's Alice",
-          author: "Alice",
+          author: {
+            id: "alice-id",
+            username: "Alice",
+            profilePicture: "alice.png",
+            followersCount: 42,
+            followingCount: 20,
+          },
           publishedAt: "2023-05-26T10:00:00.000Z",
         },
         {
           id: "msg2-id",
           text: "Hello again",
-          author: "Alice",
+          author: {
+            id: "alice-id",
+            username: "Alice",
+            profilePicture: "alice.png",
+            followersCount: 42,
+            followingCount: 20,
+          },
           publishedAt: "2023-05-26T11:00:00.000Z",
         },
       ],
@@ -100,11 +148,17 @@ describe("Feature: Posting a message on a timeline", () => {
   });
 
   test("Example: Alice tries to post a message but it has failed", async () => {
-    authFixture.givenAuthenticatedUserIs("Alice");
+    authFixture.givenAuthenticatedUserIs("alice-id");
     fixture.givenNowIs(new Date("2023-05-26T10:00:00.000Z"));
     fixture.givenTimeline({
       id: "alice-timeline-id",
-      user: "Alice",
+      user: {
+        id: "alice-id",
+        username: "Alice",
+        profilePicture: "alice.png",
+        followersCount: 42,
+        followingCount: 20,
+      },
       messages: [],
     });
     fixture.givenPostMessageWillFailWithError("Cannot post message");
@@ -117,12 +171,24 @@ describe("Feature: Posting a message on a timeline", () => {
 
     fixture.thenTimelineShouldBe({
       id: "alice-timeline-id",
-      user: "Alice",
+      user: {
+        id: "alice-id",
+        username: "Alice",
+        profilePicture: "alice.png",
+        followersCount: 42,
+        followingCount: 20,
+      },
       messages: [
         {
           id: "msg1-id",
           text: "Hello it's Alice",
-          author: "Alice",
+          author: {
+            id: "alice-id",
+            username: "Alice",
+            profilePicture: "alice.png",
+            followersCount: 42,
+            followingCount: 20,
+          },
           publishedAt: "2023-05-26T10:00:00.000Z",
         },
       ],
@@ -135,11 +201,23 @@ describe("Feature: Posting a message on a timeline", () => {
     fixture.givenNowIs(new Date("2023-05-26T10:00:00.000Z"));
     fixture.givenTimeline({
       id: "alice-timeline-id",
-      user: "Alice",
+      user: {
+        id: "alice-id",
+        username: "Alice",
+        profilePicture: "alice.png",
+        followersCount: 42,
+        followingCount: 20,
+      },
       messages: [
         {
           id: "msg1-id",
-          author: "Alice",
+          author: {
+            id: "alice-id",
+            username: "Alice",
+            profilePicture: "alice.png",
+            followersCount: 42,
+            followingCount: 20,
+          },
           text: "Hello it's Alice",
           publishedAt: "2023-05-26T09:59:00.000Z",
         },
@@ -149,20 +227,32 @@ describe("Feature: Posting a message on a timeline", () => {
       messageId: "msg1-id",
       error: "Cannot post message",
     });
-    -(await fixture.whenUserPostsMessage({
+    await fixture.whenUserPostsMessage({
       messageId: "msg1-id",
       timelineId: "alice-timeline-id",
       text: "Hello it's Alice",
-    }));
+    });
 
     fixture.thenTimelineShouldBe({
       id: "alice-timeline-id",
-      user: "Alice",
+      user: {
+        id: "alice-id",
+        username: "Alice",
+        profilePicture: "alice.png",
+        followersCount: 42,
+        followingCount: 20,
+      },
       messages: [
         {
           id: "msg1-id",
           text: "Hello it's Alice",
-          author: "Alice",
+          author: {
+            id: "alice-id",
+            username: "Alice",
+            profilePicture: "alice.png",
+            followersCount: 42,
+            followingCount: 20,
+          },
           publishedAt: "2023-05-26T10:00:00.000Z",
         },
       ],

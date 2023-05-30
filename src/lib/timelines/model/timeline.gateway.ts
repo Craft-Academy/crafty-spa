@@ -1,11 +1,13 @@
+import { User } from "@/lib/users/model/user.entity";
+
 export type GetUserTimelineResponse = {
   timeline: {
     id: string;
-    user: string;
+    user: User;
     messages: {
       id: string;
       text: string;
-      author: string;
+      author: User;
       publishedAt: string;
     }[];
   };

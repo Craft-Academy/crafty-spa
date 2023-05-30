@@ -1,6 +1,4 @@
-type User = {
-  id: string;
-};
+import { User } from "./user.entity";
 
 export type GetUserFollowersResponse = {
   followers: User[];

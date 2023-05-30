@@ -12,43 +12,79 @@ describe("Feature: Retrieving user's timeline", () => {
     //arrange (given)
     fixture.givenExistingRemoteTimeline({
       id: "bob-timeline-id",
-      user: "Bob",
+      user: {
+        id: "bob-id",
+        username: "Bob",
+        profilePicture: "bob.png",
+        followersCount: 10,
+        followingCount: 5,
+      },
       messages: [
         {
           id: "msg1-id",
           text: "Hello it's Bob",
-          author: "Bob",
+          author: {
+            id: "bob-id",
+            username: "Bob",
+            profilePicture: "bob.png",
+            followersCount: 10,
+            followingCount: 5,
+          },
           publishedAt: "2023-05-16T12:06:00.000Z",
         },
         {
           id: "msg2-id",
           text: "Hello it's Alice",
-          author: "Alice",
+          author: {
+            id: "alice-id",
+            username: "Alice",
+            profilePicture: "alice.png",
+            followersCount: 42,
+            followingCount: 20,
+          },
           publishedAt: "2023-05-16T12:05:00.000Z",
         },
       ],
     });
 
     //act (when)
-    const timelineRetrieving = fixture.whenRetrievingUserTimeline("Bob");
+    const timelineRetrieving = fixture.whenRetrievingUserTimeline("bob-id");
 
     //assert (then)
-    fixture.thenTheTimelineOfUserShouldBeLoading("Bob");
+    fixture.thenTheTimelineOfUserShouldBeLoading("bob-id");
     await timelineRetrieving;
     fixture.thenTheReceivedTimelineShouldBe({
       id: "bob-timeline-id",
-      user: "Bob",
+      user: {
+        id: "bob-id",
+        username: "Bob",
+        profilePicture: "bob.png",
+        followersCount: 10,
+        followingCount: 5,
+      },
       messages: [
         {
           id: "msg1-id",
           text: "Hello it's Bob",
-          author: "Bob",
+          author: {
+            id: "bob-id",
+            username: "Bob",
+            profilePicture: "bob.png",
+            followersCount: 10,
+            followingCount: 5,
+          },
           publishedAt: "2023-05-16T12:06:00.000Z",
         },
         {
           id: "msg2-id",
           text: "Hello it's Alice",
-          author: "Alice",
+          author: {
+            id: "alice-id",
+            username: "Alice",
+            profilePicture: "alice.png",
+            followersCount: 42,
+            followingCount: 20,
+          },
           publishedAt: "2023-05-16T12:05:00.000Z",
         },
       ],

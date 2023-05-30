@@ -19,11 +19,17 @@ export const randomPickFromMap = <T>(theMap: Map<string, T>) =>
   ) as T;
 
 export const users = new Map(
-  new Array(500).fill(null).map(() => {
-    const username = randUserName();
-    return [username, username];
-  })
+  generateRandomIds(500).map((userId) => [
+    userId,
+    {
+      id: userId,
+      username: randUserName(),
+      profilePicture: `https://picsum.photos/200?random=${userId}`,
+    },
+  ])
 );
+
+export const fakeAuthUser = randomPickFromMap(users);
 
 export const messages = new Map(
   generateRandomIds(1000).map((msgId) => [
@@ -34,7 +40,7 @@ export const messages = new Map(
         "\n"
       ),
       publishedAt: randRecentDate(),
-      authorId: randomPickFromMap(users),
+      authorId: randomPickFromMap(users).id,
     },
   ])
 );
@@ -47,7 +53,7 @@ export const likesByMessage = new Map(
     return [
       msg.id,
       generateRandomIds(randNumber({ min: 0, max: 150 })).map((likeId) => {
-        const userId = randomPickFromMap(usersCopy);
+        const userId = randomPickFromMap(usersCopy).id;
         usersCopy.delete(userId);
         userLikesByMessage.set(
           msg.id,
@@ -67,11 +73,11 @@ export const likesByMessage = new Map(
 export const messagesByTimeline = new Map<string, string[]>();
 
 export const timelinesByUser = new Map(
-  [...users.values()].map((userId) => {
+  [...users.values()].map((user) => {
     const timelineId = randomId();
     const messagesCopy = new Map(messages);
     const messageIds: string[] = (() =>
-      new Array(10).fill(null).map(() => {
+      new Array(100).fill(null).map(() => {
         const messageId = randomPickFromMap(messagesCopy).id;
         messagesCopy.delete(messageId);
         messagesByTimeline.set(
@@ -88,10 +94,10 @@ export const timelinesByUser = new Map(
       return mB.publishedAt.getTime() - mA.publishedAt.getTime();
     });
     return [
-      userId,
+      user.id,
       {
         id: timelineId,
-        user: userId,
+        user: user.id,
         messages: messageIds,
       },
     ];
@@ -101,14 +107,14 @@ export const timelinesByUser = new Map(
 export const followersByUser = new Map(
   [...users.values()].map((u) => {
     const usersCopy = new Map(users);
-    usersCopy.delete(u);
+    usersCopy.delete(u.id);
 
     return [
-      u,
+      u.id,
       new Array(randNumber({ min: 0, max: usersCopy.size }))
         .fill(null)
         .map(() => {
-          const userId = randomPickFromMap(usersCopy);
+          const userId = randomPickFromMap(usersCopy).id;
           usersCopy.delete(userId);
           return userId;
         }),
@@ -125,5 +131,5 @@ for (const [userId, followers] of followersByUser) {
   });
 }
 
-// export const isAuthUserFollowsUser = (userId: string) =>
-//   (followingByUser.get(fakeAuthUser.id) ?? []).includes(userId);
+export const isAuthUserFollowsUser = (userId: string) =>
+  (followingByUser.get(fakeAuthUser.id) ?? []).includes(userId);

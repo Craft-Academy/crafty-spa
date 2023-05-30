@@ -8,6 +8,7 @@ import { Timeline, timelinesAdapter } from "./timelines/model/timeline.entity";
 import { rootReducer } from "./root-reducer";
 import { Message, messagesAdapter } from "./timelines/model/message.entity";
 import { relationshipsAdapter } from "./users/model/relationship.entity";
+import { User, usersAdapter } from "./users/model/user.entity";
 
 const initialState = rootReducer(undefined, createAction(""));
 
@@ -44,6 +45,7 @@ const withFollowingLoading = createAction<{ of: string }>(
 const withFollowingNotLoading = createAction<{ of: string }>(
   "withFollowingNotLoading"
 );
+const withUsers = createAction<User[]>("withUsers");
 
 const reducer = createReducer(initialState, (builder) => {
   builder
@@ -100,6 +102,9 @@ const reducer = createReducer(initialState, (builder) => {
     })
     .addCase(withFollowingNotLoading, (state, action) => {
       state.users.relationships.loadingFollowingOf[action.payload.of] = false;
+    })
+    .addCase(withUsers, (state, action) => {
+      usersAdapter.addMany(state.users.users, action.payload);
     });
 });
 
@@ -126,6 +131,7 @@ export const stateBuilder = (baseState = initialState) => {
     withFollowingLoading: reduce(withFollowingLoading),
     withFollowersNotLoading: reduce(withFollowersNotLoading),
     withFollowingNotLoading: reduce(withFollowingNotLoading),
+    withUsers: reduce(withUsers),
     build(): RootState {
       return baseState;
     },

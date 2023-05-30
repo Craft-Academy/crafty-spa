@@ -55,11 +55,11 @@ export const timelinesSlice = createSlice({
           const timeline = action.payload;
           timelinesAdapter.addOne(state, {
             id: timeline.id,
-            user: timeline.user,
+            user: timeline.user.id,
             messages: timeline.messages.map((m) => m.id),
           });
           setUserTimelineLoadingState(state, {
-            userId: timeline.user,
+            userId: timeline.user.id,
             loading: false,
           });
         }

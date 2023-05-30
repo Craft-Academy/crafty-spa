@@ -31,7 +31,10 @@ export const messagesSlice = createSlice({
       .addMatcher(
         isAnyOf(getAuthUserTimeline.fulfilled, getUserTimeline.fulfilled),
         (state, action) => {
-          messagesAdapter.addMany(state, action.payload.messages);
+          messagesAdapter.addMany(
+            state,
+            action.payload.messages.map((m) => ({ ...m, author: m.author.id }))
+          );
         }
       );
   },

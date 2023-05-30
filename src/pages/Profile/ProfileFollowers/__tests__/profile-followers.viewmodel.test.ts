@@ -22,6 +22,22 @@ describe("ProfileFollowers view model", () => {
     })(
       stateBuilder()
         .withFollowers({ of: "Charles", followers: ["bob", "alice"] })
+        .withUsers([
+          {
+            id: "bob",
+            username: "Bob",
+            profilePicture: "bob.png",
+            followersCount: 10,
+            followingCount: 12,
+          },
+          {
+            id: "alice",
+            username: "Alice",
+            profilePicture: "alice.png",
+            followersCount: 15,
+            followingCount: 5,
+          },
+        ])
         .build()
     );
 
@@ -30,14 +46,16 @@ describe("ProfileFollowers view model", () => {
       followers: [
         {
           id: "bob",
-          username: "bob",
-          profilePicture: "https://picsum.photos/200?random=bob",
+          username: "Bob",
+          profilePicture: "bob.png",
+          followersCount: 10,
           link: "/u/bob",
         },
         {
           id: "alice",
-          username: "alice",
-          profilePicture: "https://picsum.photos/200?random=alice",
+          username: "Alice",
+          profilePicture: "alice.png",
+          followersCount: 15,
           link: "/u/alice",
         },
       ],

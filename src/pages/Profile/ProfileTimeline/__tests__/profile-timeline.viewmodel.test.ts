@@ -123,9 +123,18 @@ describe("Profile timeline view model for Bob's profile", () => {
       .withMessages([
         {
           id: "msg1-id",
-          author: "Bob",
+          author: "bob-id",
           publishedAt: "2023-05-17T10:55:00.000Z",
           text: "Hi it's Bob !",
+        },
+      ])
+      .withUsers([
+        {
+          id: "bob-id",
+          username: "Bob",
+          profilePicture: "bob.png",
+          followersCount: 10,
+          followingCount: 5,
         },
       ])
       .build();
@@ -143,9 +152,9 @@ describe("Profile timeline view model for Bob's profile", () => {
         messages: [
           createMessageView({
             id: "msg1-id",
-            userId: "Bob",
+            userId: "bob-id",
             username: "Bob",
-            profilePictureUrl: "https://picsum.photos/200?random=Bob",
+            profilePictureUrl: "bob.png",
             publishedAt: "26 minutes ago",
             text: "Hi it's Bob !",
             backgroundColor: "white",
@@ -159,34 +168,50 @@ describe("Profile timeline view model for Bob's profile", () => {
     const initialState = stateBuilder()
       .withTimeline({
         id: "bob-timeline-id",
-        user: "Bob",
+        user: "bob-id",
         messages: ["msg1-id", "msg2-id"],
       })
       .withMessages([
         {
           id: "msg1-id",
-          author: "Bob",
+          author: "bob-id",
           publishedAt: "2023-05-17T10:55:00.000Z",
           text: "Hi it's Bob !",
         },
         {
           id: "msg2-id",
-          author: "Alice",
+          author: "alice-id",
           publishedAt: "2023-05-17T10:59:00.000Z",
           text: "Hi Bob !",
         },
         {
           id: "msg3-id",
-          author: "Charles",
+          author: "charles-id",
           publishedAt: "2023-05-17T11:00:00.000Z",
           text: "Charles' message",
+        },
+      ])
+      .withUsers([
+        {
+          id: "bob-id",
+          username: "Bob",
+          profilePicture: "bob.png",
+          followersCount: 10,
+          followingCount: 5,
+        },
+        {
+          id: "alice-id",
+          username: "Alice",
+          profilePicture: "alice.png",
+          followersCount: 10,
+          followingCount: 5,
         },
       ])
       .build();
     const store = createTestStore({}, initialState);
 
     const profileTimelineViewModel = createTestProfileTimelineViewModel({
-      userId: "Bob",
+      userId: "bob-id",
       getNow: () => "2023-05-17T11:21:00.000Z",
     })(store.getState());
 
@@ -197,17 +222,17 @@ describe("Profile timeline view model for Bob's profile", () => {
         messages: [
           createMessageView({
             id: "msg2-id",
-            userId: "Alice",
+            userId: "alice-id",
             username: "Alice",
-            profilePictureUrl: "https://picsum.photos/200?random=Alice",
+            profilePictureUrl: "alice.png",
             publishedAt: "22 minutes ago",
             text: "Hi Bob !",
           }),
           createMessageView({
             id: "msg1-id",
-            userId: "Bob",
+            userId: "bob-id",
             username: "Bob",
-            profilePictureUrl: "https://picsum.photos/200?random=Bob",
+            profilePictureUrl: "bob.png",
             publishedAt: "26 minutes ago",
             text: "Hi it's Bob !",
           }),
@@ -219,13 +244,13 @@ describe("Profile timeline view model for Bob's profile", () => {
     const initialState = stateBuilder()
       .withTimeline({
         id: "bob-timeline-id",
-        user: "Bob",
+        user: "bob-id",
         messages: ["msg1-id"],
       })
       .withMessages([
         {
           id: "msg1-id",
-          author: "Bob",
+          author: "bob-id",
           publishedAt: "2023-05-17T10:55:00.000Z",
           text: "Hi it's Bob !",
         },
@@ -234,11 +259,20 @@ describe("Profile timeline view model for Bob's profile", () => {
         messageId: "msg1-id",
         error: "Cannot post message",
       })
+      .withUsers([
+        {
+          id: "bob-id",
+          username: "Bob",
+          profilePicture: "bob.png",
+          followersCount: 10,
+          followingCount: 5,
+        },
+      ])
       .build();
     const store = createTestStore({}, initialState);
 
     const profileTimelineViewModel = createTestProfileTimelineViewModel({
-      userId: "Bob",
+      userId: "bob-id",
       getNow: () => "2023-05-17T11:21:00.000Z",
     })(store.getState());
 
@@ -249,9 +283,9 @@ describe("Profile timeline view model for Bob's profile", () => {
         messages: [
           createMessageView({
             id: "msg1-id",
-            userId: "Bob",
+            userId: "bob-id",
             username: "Bob",
-            profilePictureUrl: "https://picsum.photos/200?random=Bob",
+            profilePictureUrl: "bob.png",
             publishedAt: "26 minutes ago",
             text: "Hi it's Bob !",
             failedToBePosted: true,
@@ -267,13 +301,13 @@ describe("Profile timeline view model for Bob's profile", () => {
     const initialState = stateBuilder()
       .withTimeline({
         id: "bob-timeline-id",
-        user: "Bob",
+        user: "bob-id",
         messages: ["msg1-id"],
       })
       .withMessages([
         {
           id: "msg1-id",
-          author: "Bob",
+          author: "bob-id",
           publishedAt: "2023-05-17T10:55:00.000Z",
           text: "Hi it's Bob !",
         },
@@ -282,11 +316,20 @@ describe("Profile timeline view model for Bob's profile", () => {
         messageId: "msg1-id",
         error: "Cannot post message",
       })
+      .withUsers([
+        {
+          id: "bob-id",
+          username: "Bob",
+          profilePicture: "bob.png",
+          followersCount: 10,
+          followingCount: 5,
+        },
+      ])
       .build();
     const store = createTestStore({}, initialState);
 
     const profileTimelineViewModel = createTestProfileTimelineViewModel({
-      userId: "Bob",
+      userId: "bob-id",
       getNow: () => "2023-05-17T11:21:00.000Z",
       dispatch: store.dispatch,
     })(store.getState());

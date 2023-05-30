@@ -12,8 +12,8 @@ import { RealDateProvider } from "./lib/timelines/infra/real-date-provider.ts";
 import { FakeDataUserGateway } from "./lib/users/infra/fake-data-user.gateway.ts";
 
 const fakeAuthGateway = new FakeAuthGateway(500);
-fakeAuthGateway.willSucceedForGoogleAuthForUser = [...users.values()][0];
-fakeAuthGateway.willSucceedForGithubAuthForUser = [...users.values()][1];
+fakeAuthGateway.willSucceedForGoogleAuthForUser = [...users.values()][0].id;
+fakeAuthGateway.willSucceedForGithubAuthForUser = [...users.values()][1].id;
 const messageGateway = new FakeMessageGateway();
 const authGateway = new FakeStorageAuthGateway(fakeAuthGateway);
 const userGateway = new FakeDataUserGateway();

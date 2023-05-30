@@ -12,7 +12,6 @@ export const getAuthUserTimeline = createAppAsyncThunk(
   async (_, { extra: { timelineGateway }, dispatch, getState }) => {
     const authUser = selectAuthUser(getState());
     dispatch(getAuthUserTimelinePending({ authUser }));
-
     const { timeline } = await timelineGateway.getUserTimeline({
       userId: authUser,
     });

@@ -5,7 +5,6 @@ import { stateBuilder, stateBuilderProvider } from "@/lib/state-builder";
 import { AppStore, createTestStore } from "@/lib/create-store";
 import { selectIsUserTimelineLoading } from "../slices/timelines.slice";
 import { getUserTimeline } from "../usecases/get-user-timeline.usecase";
-import { selectAuthUser } from "@/lib/auth/reducer";
 import {
   PostMessageParams,
   postMessage,
@@ -14,14 +13,16 @@ import { StubDateProvider } from "../infra/stub-date-provider";
 import { FakeMessageGateway } from "../infra/fake-message.gateway";
 import { FailingMessageGateway } from "../infra/failing-message.gateway";
 import { MessageGateway } from "../model/message.gateway";
+import { getAuthUserTimeline } from "../usecases/get-auth-user-timeline.usecase";
+import { User } from "@/lib/users/model/user.entity";
 
-type Timeline = {
-  user: string;
+type ExpectedTimeline = {
+  user: User;
   id: string;
   messages: {
     id: string;
     text: string;
-    author: string;
+    author: User;
     publishedAt: string;
   }[];
 };
@@ -40,27 +41,33 @@ export const createTimelinesFixture = (
       dateProvider.now = now;
     },
     givenExistingRemoteTimeline(timeline: {
-      user: string;
+      user: User;
       id: string;
       messages: {
         id: string;
         text: string;
-        author: string;
+        author: User;
         publishedAt: string;
       }[];
     }) {
-      timelineGateway.timelinesByUser.set(timeline.user, timeline);
+      timelineGateway.timelinesByUser.set(timeline.user.id, timeline);
     },
-    givenTimeline(timeline: Timeline) {
+    givenTimeline(timeline: ExpectedTimeline) {
       testStateBuilderProvider.setState((builder) =>
         builder
           .withTimeline({
             id: timeline.id,
-            user: timeline.user,
+            user: timeline.user.id,
             messages: timeline.messages.map((m) => m.id),
           })
-          .withMessages(timeline.messages)
-          .withNotLoadingTimelineOf({ user: timeline.user })
+          .withMessages(
+            timeline.messages.map((m) => ({
+              ...m,
+              author: m.author.id,
+            }))
+          )
+          .withUsers([timeline.user, ...timeline.messages.map((m) => m.author)])
+          .withNotLoadingTimelineOf({ user: timeline.user.id })
       );
     },
     givenPostMessageWillFailWithError(error: string) {
@@ -88,11 +95,17 @@ export const createTimelinesFixture = (
         },
         testStateBuilderProvider.getState()
       );
-      await store.dispatch(getUserTimeline({ userId }));
+      return store.dispatch(getUserTimeline({ userId }));
     },
     async whenRetrievingAuthenticatedUserTimeline() {
-      const authUserId = selectAuthUser(testStateBuilderProvider.getState());
-      return this.whenRetrievingUserTimeline(authUserId);
+      store = createTestStore(
+        {
+          timelineGateway,
+          authGateway,
+        },
+        testStateBuilderProvider.getState()
+      );
+      return store.dispatch(getAuthUserTimeline());
     },
     async whenUserPostsMessage(postMessageParams: PostMessageParams) {
       store = createTestStore(
@@ -108,7 +121,7 @@ export const createTimelinesFixture = (
       );
       expect(isUserTimelineLoading).toBe(true);
     },
-    thenTheReceivedTimelineShouldBe(expectedTimeline: Timeline) {
+    thenTheReceivedTimelineShouldBe(expectedTimeline: ExpectedTimeline) {
       this.thenTimelineShouldBe(expectedTimeline);
     },
     thenMessageShouldHaveBeenPosted(expectedPostedMessage: {
@@ -123,18 +136,24 @@ export const createTimelinesFixture = (
       );
     },
     thenTimelineShouldBe(
-      expectedTimeline: Timeline & {
+      expectedTimeline: ExpectedTimeline & {
         messageNotPosted?: { messageId: string; error: string };
       }
     ) {
       let expectedState = stateBuilder(testStateBuilderProvider.getState())
         .withTimeline({
           id: expectedTimeline.id,
-          user: expectedTimeline.user,
+          user: expectedTimeline.user.id,
           messages: expectedTimeline.messages.map((m) => m.id),
         })
-        .withMessages(expectedTimeline.messages)
-        .withNotLoadingTimelineOf({ user: expectedTimeline.user });
+        .withMessages(
+          expectedTimeline.messages.map((m) => ({ ...m, author: m.author.id }))
+        )
+        .withUsers([
+          expectedTimeline.user,
+          ...expectedTimeline.messages.map((m) => m.author),
+        ])
+        .withNotLoadingTimelineOf({ user: expectedTimeline.user.id });
 
       expectedState =
         expectedTimeline.messageNotPosted === undefined

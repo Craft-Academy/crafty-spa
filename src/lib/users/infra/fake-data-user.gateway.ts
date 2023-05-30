@@ -1,4 +1,4 @@
-import { followersByUser, followingByUser } from "@/lib/fake-data";
+import { followersByUser, followingByUser, users } from "@/lib/fake-data";
 import {
   GetUserFollowersResponse,
   GetUserFollowingResponse,
@@ -21,9 +21,22 @@ export class FakeDataUserGateway implements UserGateway {
         }
 
         return resolve({
-          followers: followers.map((userId) => ({
-            id: userId,
-          })),
+          followers: followers
+            .map((userId) => {
+              const user = users.get(userId);
+              if (!user) return null;
+
+              const followersCount = (followersByUser.get(userId) ?? []).length;
+              const followingCount = (followingByUser.get(userId) ?? []).length;
+              return {
+                id: userId,
+                username: user.username,
+                profilePicture: user.profilePicture,
+                followersCount,
+                followingCount,
+              };
+            })
+            .filter(Boolean),
         });
       }, 500);
     });
@@ -43,9 +56,22 @@ export class FakeDataUserGateway implements UserGateway {
         }
 
         return resolve({
-          following: following.map((userId) => ({
-            id: userId,
-          })),
+          following: following
+            .map((userId) => {
+              const user = users.get(userId);
+              if (!user) return null;
+
+              const followersCount = (followersByUser.get(userId) ?? []).length;
+              const followingCount = (followingByUser.get(userId) ?? []).length;
+              return {
+                id: userId,
+                username: user.username,
+                profilePicture: user.profilePicture,
+                followersCount,
+                followingCount,
+              };
+            })
+            .filter(Boolean),
         });
       }, 500);
     });

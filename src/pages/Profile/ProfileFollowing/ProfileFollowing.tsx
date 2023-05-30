@@ -20,7 +20,7 @@ export const ProfileFollowing = () => {
     case ProfileFollowingViewModelType.ProfileFollowingLoaded:
       return (
         <>
-          <RelationshipGrid relationshipCards={viewModel.followers} />
+          <RelationshipGrid relationshipCards={viewModel.following} />
           <Center>
             <Button mb={10} colorScheme="twitter">
               Voir plus

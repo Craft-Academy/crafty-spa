@@ -1,3 +1,4 @@
+import { User } from "@/lib/users/model/user.entity";
 import {
   GetUserTimelineResponse,
   TimelineGateway,
@@ -10,11 +11,11 @@ export class FakeTimelineGateway implements TimelineGateway {
     string,
     {
       id: string;
-      user: string;
+      user: User;
       messages: {
         id: string;
         text: string;
-        author: string;
+        author: User;
         publishedAt: string;
       }[];
     }
