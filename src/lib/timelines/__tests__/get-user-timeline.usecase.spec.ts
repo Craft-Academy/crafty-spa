@@ -1,5 +1,6 @@
 import { describe, it, beforeEach } from "vitest";
 import { TimelinesFixture, createTimelinesFixture } from "./timelines.fixture";
+import { buildUser } from "@/lib/users/__tests__/user.builder";
 
 describe("Feature: Retrieving user's timeline", () => {
   let fixture: TimelinesFixture;
@@ -10,38 +11,30 @@ describe("Feature: Retrieving user's timeline", () => {
 
   it("Example: We are on Bob profile", async () => {
     //arrange (given)
+    const alice = buildUser({
+      id: "alice-id",
+      username: "Alice",
+      profilePicture: "alice.png",
+    });
+    const bob = buildUser({
+      id: "bob-id",
+      username: "Bob",
+      profilePicture: "bob.png",
+    });
     fixture.givenExistingRemoteTimeline({
       id: "bob-timeline-id",
-      user: {
-        id: "bob-id",
-        username: "Bob",
-        profilePicture: "bob.png",
-        followersCount: 10,
-        followingCount: 5,
-      },
+      user: bob,
       messages: [
         {
           id: "msg1-id",
           text: "Hello it's Bob",
-          author: {
-            id: "bob-id",
-            username: "Bob",
-            profilePicture: "bob.png",
-            followersCount: 10,
-            followingCount: 5,
-          },
+          author: bob,
           publishedAt: "2023-05-16T12:06:00.000Z",
         },
         {
           id: "msg2-id",
           text: "Hello it's Alice",
-          author: {
-            id: "alice-id",
-            username: "Alice",
-            profilePicture: "alice.png",
-            followersCount: 42,
-            followingCount: 20,
-          },
+          author: alice,
           publishedAt: "2023-05-16T12:05:00.000Z",
         },
       ],
@@ -55,36 +48,18 @@ describe("Feature: Retrieving user's timeline", () => {
     await timelineRetrieving;
     fixture.thenTheReceivedTimelineShouldBe({
       id: "bob-timeline-id",
-      user: {
-        id: "bob-id",
-        username: "Bob",
-        profilePicture: "bob.png",
-        followersCount: 10,
-        followingCount: 5,
-      },
+      user: bob,
       messages: [
         {
           id: "msg1-id",
           text: "Hello it's Bob",
-          author: {
-            id: "bob-id",
-            username: "Bob",
-            profilePicture: "bob.png",
-            followersCount: 10,
-            followingCount: 5,
-          },
+          author: bob,
           publishedAt: "2023-05-16T12:06:00.000Z",
         },
         {
           id: "msg2-id",
           text: "Hello it's Alice",
-          author: {
-            id: "alice-id",
-            username: "Alice",
-            profilePicture: "alice.png",
-            followersCount: 42,
-            followingCount: 20,
-          },
+          author: alice,
           publishedAt: "2023-05-16T12:05:00.000Z",
         },
       ],

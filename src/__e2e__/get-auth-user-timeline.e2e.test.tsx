@@ -5,24 +5,33 @@ import { createTestStore } from "@/lib/create-store";
 import { FakeTimelineGateway } from "@/lib/timelines/infra/fake-timeline.gateway";
 import { createRouter } from "@/router";
 import { stateBuilder } from "@/lib/state-builder";
+import { buildUser } from "@/lib/users/__tests__/user.builder";
 
 describe("Get auth user timeline", () => {
   it("displays the authenticated user timeline on the home page", async () => {
+    const alice = buildUser({
+      id: "alice-id",
+      username: "Alice",
+    });
+    const bob = buildUser({
+      id: "bob-id",
+      username: "Bob",
+    });
     const timelineGateway = new FakeTimelineGateway();
-    timelineGateway.timelinesByUser.set("Alice", {
+    timelineGateway.timelinesByUser.set("alice-id", {
       id: "alice-timeline-id",
-      user: "Alice",
+      user: alice,
       messages: [
         {
           id: "msg1-id",
           text: "Hello it's Bob",
-          author: "Bob",
+          author: bob,
           publishedAt: "2023-05-16T12:06:00.000Z",
         },
         {
           id: "msg2-id",
           text: "Hello it's Alice",
-          author: "Alice",
+          author: alice,
           publishedAt: "2023-05-16T12:05:00.000Z",
         },
       ],
@@ -31,7 +40,7 @@ describe("Get auth user timeline", () => {
       {
         timelineGateway,
       },
-      stateBuilder().withAuthUser({ authUser: "Alice" }).build()
+      stateBuilder().withAuthUser({ authUser: "alice-id" }).build()
     );
     const router = createRouter({ store });
     render(<Provider store={store} router={router} />);
