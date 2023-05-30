@@ -4,8 +4,27 @@ import {
   GetUserFollowingResponse,
   UserGateway,
 } from "../model/user.gateway";
+import { User } from "../model/user.entity";
 
 export class FakeDataUserGateway implements UserGateway {
+  getUser(userId: string): Promise<User> {
+    return new Promise((resolve, reject) =>
+      setTimeout(() => {
+        const user = users.get(userId);
+        if (!user) {
+          return reject(new Error("No user found"));
+        }
+
+        const followersCount = (followersByUser.get(userId) ?? []).length;
+        const followingCount = (followingByUser.get(userId) ?? []).length;
+        return resolve({
+          ...user,
+          followersCount,
+          followingCount,
+        });
+      }, 500)
+    );
+  }
   getUserFollowers({
     userId,
   }: {

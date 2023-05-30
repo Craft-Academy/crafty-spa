@@ -9,6 +9,7 @@ export type GetUserFollowingResponse = {
 };
 
 export interface UserGateway {
+  getUser(userId: string): Promise<User>;
   getUserFollowers({
     userId,
   }: {

@@ -37,8 +37,12 @@ export const ProfileLayout = () => {
       <Tabs size="lg">
         <TabList>
           <NavTab to={`/u/${userId}`}>Timeline</NavTab>
-          <NavTab to={`/u/${userId}/following`}>Following (0)</NavTab>
-          <NavTab to={`/u/${userId}/followers`}>Followers (0)</NavTab>
+          <NavTab to={`/u/${userId}/following`}>
+            Following ({user?.followingCount ?? 0})
+          </NavTab>
+          <NavTab to={`/u/${userId}/followers`}>
+            Followers ({user?.followersCount ?? 0})
+          </NavTab>
         </TabList>
       </Tabs>
 

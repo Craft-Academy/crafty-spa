@@ -12,6 +12,7 @@ import { ProfileFollowers } from "./pages/Profile/ProfileFollowers";
 import { createProfileFollowersLoader } from "./pages/Profile/ProfileFollowers/create-profile-followers-loader";
 import { ProfileFollowing } from "./pages/Profile/ProfileFollowing";
 import { createProfileFollowingLoader } from "./pages/Profile/ProfileFollowing/create-profile-following-loader";
+import { createProfileLoader } from "./pages/Profile/create-profile-loader";
 
 export const createRouter = (
   { store }: { store: AppStore },
@@ -38,6 +39,7 @@ export const createRouter = (
         {
           path: "u/:userId",
           element: <ProfileLayout />,
+          loader: createProfileLoader({ store }),
           children: [
             {
               index: true,

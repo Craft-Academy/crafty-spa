@@ -8,6 +8,14 @@ import {
 export class FakeUserGateway implements UserGateway {
   willRespondForGetUserFollowers = new Map<string, GetUserFollowersResponse>();
   willRespondForGetUserFollowing = new Map<string, GetUserFollowingResponse>();
+  users = new Map<string, User>();
+  getUser(userId: string): Promise<User> {
+    const user = this.users.get(userId);
+    if (user) {
+      return Promise.resolve(user);
+    }
+    return Promise.reject();
+  }
   getUserFollowers({
     userId,
   }: {

@@ -46,6 +46,9 @@ const withFollowingNotLoading = createAction<{ of: string }>(
   "withFollowingNotLoading"
 );
 const withUsers = createAction<User[]>("withUsers");
+const withNotLoadingUser = createAction<{ userId: string }>(
+  "withNotLoadingUser"
+);
 
 const reducer = createReducer(initialState, (builder) => {
   builder
@@ -105,6 +108,9 @@ const reducer = createReducer(initialState, (builder) => {
     })
     .addCase(withUsers, (state, action) => {
       usersAdapter.addMany(state.users.users, action.payload);
+    })
+    .addCase(withNotLoadingUser, (state, action) => {
+      state.users.users.loadingUsers[action.payload.userId] = false;
     });
 });
 
@@ -132,6 +138,7 @@ export const stateBuilder = (baseState = initialState) => {
     withFollowersNotLoading: reduce(withFollowersNotLoading),
     withFollowingNotLoading: reduce(withFollowingNotLoading),
     withUsers: reduce(withUsers),
+    withNotLoadingUser: reduce(withNotLoadingUser),
     build(): RootState {
       return baseState;
     },
