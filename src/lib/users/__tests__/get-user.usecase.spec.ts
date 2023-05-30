@@ -13,6 +13,7 @@ describe("Feature: Retrieving user", () => {
       profilePicture: "bob.png",
       followersCount: 50,
       followingCount: 10,
+      isFollowedByAuthUser: true,
     });
 
     const retrievingUser = fixture.whenRetrievingUser("bob-id");
@@ -25,6 +26,7 @@ describe("Feature: Retrieving user", () => {
       profilePicture: "bob.png",
       followersCount: 50,
       followingCount: 10,
+      isFollowedByAuthUser: true,
     });
   });
 });

@@ -6,6 +6,8 @@ import {
 import { getUserFollowers } from "../usecases/get-followers.usecase";
 import { getUserFollowing } from "../usecases/get-following.usecase";
 import { RootState } from "@/lib/create-store";
+import { followUserPending } from "../usecases/follow-user.usecase";
+import { unfollowUserPending } from "../usecases/unfollow-user.usecase";
 
 type RelationshipsSliceState = EntityState<Relationship> & {
   loadingFollowersOf: { [userId: string]: boolean };
@@ -32,8 +34,8 @@ export const relationshipsSlice = createSlice({
         relationshipsAdapter.addMany(
           state,
           action.payload.followers.map((user) => ({
-            user: action.meta.arg.userId,
-            follows: user.id,
+            user: user.id,
+            follows: action.meta.arg.userId,
           }))
         );
       })
@@ -42,10 +44,23 @@ export const relationshipsSlice = createSlice({
         relationshipsAdapter.addMany(
           state,
           action.payload.following.map((user) => ({
-            user: user.id,
-            follows: action.meta.arg.userId,
+            user: action.meta.arg.userId,
+            follows: user.id,
           }))
         );
+      })
+      .addCase(followUserPending, (state, action) => {
+        relationshipsAdapter.addOne(state, {
+          user: action.payload.userId,
+          follows: action.payload.followingId,
+        });
+      })
+      .addCase(unfollowUserPending, (state, action) => {
+        const relationshipId = relationshipsAdapter.selectId({
+          user: action.payload.userId,
+          follows: action.payload.followingId,
+        });
+        relationshipsAdapter.removeOne(state, relationshipId);
       });
   },
 });
@@ -60,14 +75,14 @@ export const selectFollowersOf = (of: string, rootState: RootState) => {
   return relationshipsAdapter
     .getSelectors()
     .selectAll(rootState.users.relationships)
-    .filter((relationship) => relationship.user === of)
-    .map((followers) => followers.follows);
+    .filter((relationship) => relationship.follows === of)
+    .map((followers) => followers.user);
 };
 
 export const selectFollowingOf = (of: string, rootState: RootState) => {
   return relationshipsAdapter
     .getSelectors()
     .selectAll(rootState.users.relationships)
-    .filter((relationship) => relationship.follows === of)
-    .map((following) => following.user);
+    .filter((relationship) => relationship.user === of)
+    .map((following) => following.follows);
 };

@@ -1,4 +1,9 @@
-import { followersByUser, followingByUser, users } from "@/lib/fake-data";
+import {
+  followersByUser,
+  followingByUser,
+  isAuthUserFollowsUser,
+  users,
+} from "@/lib/fake-data";
 import {
   GetUserFollowersResponse,
   GetUserFollowingResponse,
@@ -19,6 +24,7 @@ export class FakeDataUserGateway implements UserGateway {
         const followingCount = (followingByUser.get(userId) ?? []).length;
         return resolve({
           ...user,
+          isFollowedByAuthUser: isAuthUserFollowsUser(userId),
           followersCount,
           followingCount,
         });
@@ -51,6 +57,7 @@ export class FakeDataUserGateway implements UserGateway {
                 id: userId,
                 username: user.username,
                 profilePicture: user.profilePicture,
+                isFollowedByAuthUser: isAuthUserFollowsUser(userId),
                 followersCount,
                 followingCount,
               };
@@ -86,6 +93,7 @@ export class FakeDataUserGateway implements UserGateway {
                 id: userId,
                 username: user.username,
                 profilePicture: user.profilePicture,
+                isFollowedByAuthUser: isAuthUserFollowsUser(userId),
                 followersCount,
                 followingCount,
               };
@@ -94,5 +102,45 @@ export class FakeDataUserGateway implements UserGateway {
         });
       }, 500);
     });
+  }
+
+  followUser({
+    user,
+    followingId,
+  }: {
+    user: string;
+    followingId: string;
+  }): Promise<void> {
+    return new Promise((resolve) =>
+      setTimeout(() => {
+        const existingFollowers = followersByUser.get(user) ?? [];
+        followersByUser.set(user, existingFollowers.concat(followingId));
+        resolve();
+      }, 500)
+    );
+  }
+
+  unfollowUser({
+    user,
+    followingId,
+  }: {
+    user: string;
+    followingId: string;
+  }): Promise<void> {
+    return new Promise((resolve) =>
+      setTimeout(() => {
+        const existingFollowers = followersByUser.get(user) ?? [];
+        followersByUser.set(
+          user,
+          existingFollowers.filter((u) => u !== followingId)
+        );
+        const followings = followingByUser.get(followingId) ?? [];
+        followingByUser.set(
+          followingId,
+          followings.filter((u) => u !== user)
+        );
+        resolve();
+      }, 500)
+    );
   }
 }

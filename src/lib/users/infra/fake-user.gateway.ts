@@ -9,6 +9,8 @@ export class FakeUserGateway implements UserGateway {
   willRespondForGetUserFollowers = new Map<string, GetUserFollowersResponse>();
   willRespondForGetUserFollowing = new Map<string, GetUserFollowingResponse>();
   users = new Map<string, User>();
+  lastFollowedUserBy!: { user: string; followingId: string };
+  lastUnfollowedUserBy!: { user: string; followingId: string };
   getUser(userId: string): Promise<User> {
     const user = this.users.get(userId);
     if (user) {
@@ -38,6 +40,30 @@ export class FakeUserGateway implements UserGateway {
       return Promise.reject();
     }
     return Promise.resolve(response);
+  }
+
+  followUser({
+    user,
+    followingId,
+  }: {
+    user: string;
+    followingId: string;
+  }): Promise<void> {
+    this.lastFollowedUserBy = { user, followingId };
+
+    return Promise.resolve();
+  }
+
+  unfollowUser({
+    user,
+    followingId,
+  }: {
+    user: string;
+    followingId: string;
+  }): Promise<void> {
+    this.lastUnfollowedUserBy = { user, followingId };
+
+    return Promise.resolve();
   }
 
   givenGetUserFollowersResponseFor({
