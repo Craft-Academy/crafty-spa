@@ -5,6 +5,7 @@ import {
 } from "../model/relationship.entity";
 import { getUserFollowers } from "../usecases/get-followers.usecase";
 import { getUserFollowing } from "../usecases/get-following.usecase";
+import { RootState } from "@/lib/create-store";
 
 type RelationshipsSliceState = EntityState<Relationship> & {
   loadingFollowersOf: { [userId: string]: boolean };
@@ -48,3 +49,25 @@ export const relationshipsSlice = createSlice({
       });
   },
 });
+
+export const selectAreFollowersOfLoading = (of: string, rootState: RootState) =>
+  rootState.users.relationships.loadingFollowersOf[of] ?? false;
+
+export const selectAreFollowingOfLoading = (of: string, rootState: RootState) =>
+  rootState.users.relationships.loadingFollowingOf[of] ?? false;
+
+export const selectFollowersOf = (of: string, rootState: RootState) => {
+  return relationshipsAdapter
+    .getSelectors()
+    .selectAll(rootState.users.relationships)
+    .filter((relationship) => relationship.user === of)
+    .map((followers) => followers.follows);
+};
+
+export const selectFollowingOf = (of: string, rootState: RootState) => {
+  return relationshipsAdapter
+    .getSelectors()
+    .selectAll(rootState.users.relationships)
+    .filter((relationship) => relationship.follows === of)
+    .map((following) => following.user);
+};

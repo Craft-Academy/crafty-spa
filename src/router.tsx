@@ -8,6 +8,10 @@ import { RedirectHomePage } from "./pages/RedirectHomePage";
 import { ProfileLayout } from "./pages/Profile/ProfileLayout";
 import { ProfileTimeline } from "./pages/Profile/ProfileTimeline";
 import { createProfileTimelineLoader } from "./pages/Profile/ProfileTimeline/create-profile-timeline-loader";
+import { ProfileFollowers } from "./pages/Profile/ProfileFollowers";
+import { createProfileFollowersLoader } from "./pages/Profile/ProfileFollowers/create-profile-followers-loader";
+import { ProfileFollowing } from "./pages/Profile/ProfileFollowing";
+import { createProfileFollowingLoader } from "./pages/Profile/ProfileFollowing/create-profile-following-loader";
 
 export const createRouter = (
   { store }: { store: AppStore },
@@ -42,11 +46,13 @@ export const createRouter = (
             },
             {
               path: "following",
-              element: <p>following</p>,
+              element: <ProfileFollowing />,
+              loader: createProfileFollowingLoader({ store }),
             },
             {
               path: "followers",
-              element: <p>followers</p>,
+              element: <ProfileFollowers />,
+              loader: createProfileFollowersLoader({ store }),
             },
           ],
         },
