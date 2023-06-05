@@ -1,4 +1,4 @@
-import { Divider, Flex, Stack, Text } from "@chakra-ui/react";
+import { Circle, Divider, Flex, Stack, Text } from "@chakra-ui/react";
 import {
   FiBell,
   FiHome,
@@ -31,8 +31,9 @@ export const Sidebar = () => {
           <Stack spacing="1">
             <NavButton label="Home" icon={FiHome} to="/home" />
             <NavButton
-              label="Notifications"
+              label="Notifications (1)"
               icon={FiBell}
+              endElement={<Circle size="2" bg="blue.400"></Circle>}
               to="/notifications"
             />
           </Stack>

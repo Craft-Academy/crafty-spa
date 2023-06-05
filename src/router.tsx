@@ -13,6 +13,7 @@ import { createProfileFollowersLoader } from "./pages/Profile/ProfileFollowers/c
 import { ProfileFollowing } from "./pages/Profile/ProfileFollowing";
 import { createProfileFollowingLoader } from "./pages/Profile/ProfileFollowing/create-profile-following-loader";
 import { createProfileLoader } from "./pages/Profile/create-profile-loader";
+import { Notifications } from "./pages/Notifications";
 
 export const createRouter = (
   { store }: { store: AppStore },
@@ -35,6 +36,10 @@ export const createRouter = (
           path: "home",
           loader: createHomeLoader({ store }),
           element: <Home />,
+        },
+        {
+          path: "notifications",
+          element: <Notifications />,
         },
         {
           path: "u/:userId",
