@@ -21,6 +21,7 @@ import { FakeUserGateway } from "./users/infra/fake-user.gateway";
 import { NotificationGateway } from "./notifications/model/notification.gateway";
 import { FakeNotificationGateway } from "./notifications/infra/fake-notification.gateway";
 import { getNotificationsOnUserAuthenticated } from "./notifications/listeners/get-notifications-on-user-authenticated.listener";
+import { listenToNewNotificationsOnUserAuthenticated } from "./notifications/listeners/listen-to-new-notification-on-user-authenticated.listener";
 
 export const EMPTY_ARGS = "EMPTY_ARGS" as const;
 
@@ -50,7 +51,13 @@ export const createStore = (
         thunk: {
           extraArgument: dependencies,
         },
-      }).prepend(logActionsMiddleware, getNotificationsOnUserAuthenticated());
+      }).prepend(
+        logActionsMiddleware,
+        getNotificationsOnUserAuthenticated(),
+        listenToNewNotificationsOnUserAuthenticated({
+          notificationGateway: dependencies.notificationGateway,
+        })
+      );
     },
     preloadedState,
   });

@@ -6,4 +6,8 @@ export interface NotificationGateway {
   }: {
     authUserId: string;
   }): Promise<Notification[]>;
+  onNewNotificationReceived(
+    authUserId: string,
+    listener: (notification: Notification) => void
+  ): void;
 }

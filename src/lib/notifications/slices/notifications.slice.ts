@@ -1,4 +1,4 @@
-import { EntityState, createSlice } from "@reduxjs/toolkit";
+import { EntityState, PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { getNotifications } from "../usecases/get-notifications.usecase";
 import { RootState } from "@/lib/create-store";
 import {
@@ -15,7 +15,11 @@ export const notificationsSlice = createSlice({
   initialState: notificationsAdapter.getInitialState({
     loading: false,
   }) as NotificationsSliceState,
-  reducers: {},
+  reducers: {
+    notificationReceived(state, action: PayloadAction<Notification>) {
+      notificationsAdapter.addOne(state, action.payload);
+    },
+  },
   extraReducers(builder) {
     builder
       .addCase(getNotifications.pending, (state) => {

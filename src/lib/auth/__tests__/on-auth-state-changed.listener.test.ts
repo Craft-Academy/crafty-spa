@@ -11,10 +11,10 @@ describe("On auth state changed listener", () => {
     });
 
     // simulation de l'authentification
-    authGateway.simulateAuthStateChanged("Alice");
+    authGateway.simulateAuthStateChanged({ id: "alice-id", username: "Alice" });
 
     expect(store.getActions()).toContainEqual(
-      userAuthenticated({ authUser: "Alice" })
+      userAuthenticated({ authUser: { id: "alice-id", username: "Alice" } })
     );
   });
 });
