@@ -18,12 +18,15 @@ import { MessageGateway } from "./timelines/model/message.gateway";
 import { FakeMessageGateway } from "./timelines/infra/fake-message.gateway";
 import { UserGateway } from "./users/model/user.gateway";
 import { FakeUserGateway } from "./users/infra/fake-user.gateway";
+import { NotificationGateway } from "./notifications/model/notification.gateway";
+import { FakeNotificationGateway } from "./notifications/infra/fake-notification.gateway";
 
 export type Dependencies = {
   authGateway: AuthGateway;
   timelineGateway: TimelineGateway;
   messageGateway: MessageGateway;
   userGateway: UserGateway;
+  notificationGateway: NotificationGateway;
   dateProvider: DateProvider;
 };
 
@@ -68,6 +71,7 @@ export const createTestStore = (
     timelineGateway = new FakeTimelineGateway(),
     messageGateway = new FakeMessageGateway(),
     userGateway = new FakeUserGateway(),
+    notificationGateway = new FakeNotificationGateway(),
     dateProvider = new RealDateProvider(),
   }: Partial<Dependencies> = {},
   preloadedState?: Partial<ReturnType<typeof rootReducer>>
@@ -78,6 +82,7 @@ export const createTestStore = (
       timelineGateway,
       messageGateway,
       userGateway,
+      notificationGateway,
       dateProvider,
     },
     preloadedState

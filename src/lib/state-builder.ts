@@ -10,6 +10,10 @@ import { Message, messagesAdapter } from "./timelines/model/message.entity";
 import { relationshipsAdapter } from "./users/model/relationship.entity";
 import { User, usersAdapter } from "./users/model/user.entity";
 import { AuthUser } from "./auth/model/auth.gateway";
+import {
+  Notification,
+  notificationsAdapter,
+} from "./notifications/model/notification.entity";
 
 const initialState = rootReducer(undefined, createAction(""));
 
@@ -52,6 +56,10 @@ const withUsers = createAction<User[]>("withUsers");
 const withNotLoadingUser = createAction<{ userId: string }>(
   "withNotLoadingUser"
 );
+const withNotificationsNotLoading = createAction<void>(
+  "withNotificationsNotLoading"
+);
+const withNotifications = createAction<Notification[]>("withNotifications");
 
 const reducer = createReducer(initialState, (builder) => {
   builder
@@ -121,6 +129,12 @@ const reducer = createReducer(initialState, (builder) => {
     })
     .addCase(withNotLoadingUser, (state, action) => {
       state.users.users.loadingUsers[action.payload.userId] = false;
+    })
+    .addCase(withNotificationsNotLoading, (state) => {
+      state.notifications.loading = false;
+    })
+    .addCase(withNotifications, (state, action) => {
+      notificationsAdapter.addMany(state.notifications, action.payload);
     });
 });
 
@@ -149,6 +163,8 @@ export const stateBuilder = (baseState = initialState) => {
     withFollowingNotLoading: reduce(withFollowingNotLoading),
     withUsers: reduce(withUsers),
     withNotLoadingUser: reduce(withNotLoadingUser),
+    withNotificationsNotLoading: reduce(withNotificationsNotLoading),
+    withNotifications: reduce(withNotifications),
     build(): RootState {
       return baseState;
     },
