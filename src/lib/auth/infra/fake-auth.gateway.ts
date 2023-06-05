@@ -1,19 +1,19 @@
 import { AuthGateway, AuthUser } from "../model/auth.gateway";
 
 export class FakeAuthGateway implements AuthGateway {
-  willSucceedForGoogleAuthForUser!: string;
-  willSucceedForGithubAuthForUser!: string;
+  willSucceedForGoogleAuthForUser!: AuthUser;
+  willSucceedForGithubAuthForUser!: AuthUser;
 
   onAuthStateChangedListener: (user: AuthUser) => void = () => {
     return;
   };
 
   constructor(private readonly delay = 0) {}
-  onAuthStateChanged(listener: (user: string) => void): void {
+  onAuthStateChanged(listener: (user: AuthUser) => void): void {
     this.onAuthStateChangedListener = listener;
   }
 
-  authenticateWithGoogle(): Promise<string> {
+  authenticateWithGoogle(): Promise<AuthUser> {
     return new Promise((resolve) =>
       setTimeout(
         () => resolve(this.willSucceedForGoogleAuthForUser),
@@ -22,7 +22,7 @@ export class FakeAuthGateway implements AuthGateway {
     );
   }
 
-  authenticateWithGithub(): Promise<string> {
+  authenticateWithGithub(): Promise<AuthUser> {
     return new Promise((resolve) =>
       setTimeout(
         () => resolve(this.willSucceedForGithubAuthForUser),
@@ -31,7 +31,7 @@ export class FakeAuthGateway implements AuthGateway {
     );
   }
 
-  simulateAuthStateChanged(authUser: string) {
+  simulateAuthStateChanged(authUser: AuthUser) {
     this.onAuthStateChangedListener(authUser);
   }
 }

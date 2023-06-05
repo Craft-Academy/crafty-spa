@@ -9,10 +9,13 @@ import { rootReducer } from "./root-reducer";
 import { Message, messagesAdapter } from "./timelines/model/message.entity";
 import { relationshipsAdapter } from "./users/model/relationship.entity";
 import { User, usersAdapter } from "./users/model/user.entity";
+import { AuthUser } from "./auth/model/auth.gateway";
 
 const initialState = rootReducer(undefined, createAction(""));
 
-const withAuthUser = createAction<{ authUser: string }>("withAuthUser");
+const withAuthUser = createAction<{ authUser: string | AuthUser }>(
+  "withAuthUser"
+);
 const withTimeline = createAction<Timeline>("withTimeline");
 const withLoadingTimelineOf = createAction<{ user: string }>(
   "withLoadingTimelineOf"
@@ -53,6 +56,13 @@ const withNotLoadingUser = createAction<{ userId: string }>(
 const reducer = createReducer(initialState, (builder) => {
   builder
     .addCase(withAuthUser, (state, action) => {
+      if (typeof action.payload.authUser === "string") {
+        state.auth.authUser = {
+          id: action.payload.authUser,
+          username: action.payload.authUser,
+        };
+        return;
+      }
       state.auth.authUser = action.payload.authUser;
     })
     .addCase(withTimeline, (state, action) => {

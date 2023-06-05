@@ -1,7 +1,7 @@
 import { createAppAsyncThunk } from "@/lib/create-app-thunk";
 import { Message } from "../model/message.entity";
 import { createAction } from "@reduxjs/toolkit";
-import { selectAuthUser } from "@/lib/auth/reducer";
+import { selectAuthUserId } from "@/lib/auth/reducer";
 
 export type PostMessageParams = {
   messageId: string;
@@ -19,7 +19,7 @@ export const postMessage = createAppAsyncThunk(
     params: PostMessageParams,
     { extra: { dateProvider, messageGateway }, dispatch, getState }
   ) => {
-    const authUser = selectAuthUser(getState());
+    const authUser = selectAuthUserId(getState());
     const message: Message = {
       id: params.messageId,
       text: params.text,
