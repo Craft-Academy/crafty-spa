@@ -20,6 +20,9 @@ import { UserGateway } from "./users/model/user.gateway";
 import { FakeUserGateway } from "./users/infra/fake-user.gateway";
 import { NotificationGateway } from "./notifications/model/notification.gateway";
 import { FakeNotificationGateway } from "./notifications/infra/fake-notification.gateway";
+import { getNotificationsOnUserAuthenticated } from "./notifications/listeners/get-notifications-on-user-authenticated.listener";
+
+export const EMPTY_ARGS = "EMPTY_ARGS" as const;
 
 export type Dependencies = {
   authGateway: AuthGateway;
@@ -47,7 +50,7 @@ export const createStore = (
         thunk: {
           extraArgument: dependencies,
         },
-      }).prepend(logActionsMiddleware);
+      }).prepend(logActionsMiddleware, getNotificationsOnUserAuthenticated());
     },
     preloadedState,
   });
@@ -99,7 +102,7 @@ export const createTestStore = (
 
       if (!isAsyncThunkAction(pendingUseCaseAction)) return;
 
-      return pendingUseCaseAction.meta.arg;
+      return pendingUseCaseAction.meta.arg ?? EMPTY_ARGS;
     },
   };
 };
