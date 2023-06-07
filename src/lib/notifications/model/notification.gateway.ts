@@ -10,4 +10,5 @@ export interface NotificationGateway {
     authUserId: string,
     listener: (notification: Notification) => void
   ): void;
+  markAllNotificationsAsRead(authUserId: string): Promise<void>;
 }

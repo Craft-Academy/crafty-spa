@@ -1,8 +1,9 @@
-import { RootState } from "@/lib/create-store";
+import { AppDispatch, RootState } from "@/lib/create-store";
 import {
   selectAreNotificationsLoading,
   selectNotifications,
 } from "@/lib/notifications/slices/notifications.slice";
+import { markAllNotificationsAsRead } from "@/lib/notifications/usecases/mark-all-notifications-as-read.usecase";
 import { format as timeAgo } from "timeago.js";
 
 export enum NotificationsViewModelType {
@@ -39,10 +40,12 @@ export const createNotificationsViewModel =
     now,
     lastSeenNotificationId,
     setLastSeenNotificationId,
+    dispatch,
   }: {
     now: Date;
     lastSeenNotificationId: string;
     setLastSeenNotificationId: (notificationId: string) => void;
+    dispatch: AppDispatch;
   }) =>
   (rootState: RootState): NotificationsViewModel => {
     const areNotificationsLoading = selectAreNotificationsLoading(rootState);
@@ -91,6 +94,7 @@ export const createNotificationsViewModel =
           : "",
       displayNewNotifications() {
         setLastSeenNotificationId(notifications[0].id);
+        dispatch(markAllNotificationsAsRead());
       },
     };
   };

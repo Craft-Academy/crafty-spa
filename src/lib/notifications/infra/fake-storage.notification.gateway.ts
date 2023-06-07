@@ -50,6 +50,31 @@ export class FakeStorageNotificationGateway implements NotificationGateway {
     window.addEventListener("storage", storageListener);
   }
 
+  markAllNotificationsAsRead(authUserId: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+      setTimeout(() => {
+        const notificationsJson =
+          localStorage.getItem(`notifications:${authUserId}`) ??
+          JSON.stringify([]);
+        try {
+          const notifications = JSON.parse(notificationsJson) as Notification[];
+
+          notifications.forEach((n) => {
+            n.read = true;
+          });
+
+          localStorage.setItem(
+            `notifications:${authUserId}`,
+            JSON.stringify(notifications)
+          );
+          resolve();
+        } catch (err) {
+          reject(err);
+        }
+      }, 500);
+    });
+  }
+
   sendFakeNotificationTo(userId: string) {
     const notification: Notification = {
       id: nanoid(5),

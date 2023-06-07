@@ -138,7 +138,7 @@ const reducer = createReducer(initialState, (builder) => {
       state.notifications.loading = true;
     })
     .addCase(withNotifications, (state, action) => {
-      notificationsAdapter.addMany(state.notifications, action.payload);
+      notificationsAdapter.upsertMany(state.notifications, action.payload);
     });
 });
 

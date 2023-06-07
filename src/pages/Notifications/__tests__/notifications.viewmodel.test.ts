@@ -4,23 +4,29 @@ import {
   NotificationsViewModelType,
   createNotificationsViewModel,
 } from "../notifications.viewmodel";
-import { RootState } from "@/lib/create-store";
+import { RootState, createTestStore } from "@/lib/create-store";
+import { markAllNotificationsAsRead } from "@/lib/notifications/usecases/mark-all-notifications-as-read.usecase";
+import { EMPTY_ARGS } from "@/lib/create-store";
+import { AppDispatch } from "@/lib/create-store";
 
 const createTestNotificationsViewModel =
   ({
     now = new Date(),
     lastSeenNotificationId = "",
     setLastSeenNotificationId = vitest.fn(),
+    dispatch = vitest.fn(),
   }: {
     now?: Date;
     lastSeenNotificationId?: string;
     setLastSeenNotificationId?: (notificationId: string) => void;
+    dispatch?: AppDispatch;
   } = {}) =>
   (rootState: RootState) =>
     createNotificationsViewModel({
       now,
       lastSeenNotificationId,
       setLastSeenNotificationId,
+      dispatch,
     })(rootState);
 
 describe("Notifications view model", () => {
@@ -144,7 +150,7 @@ describe("Notifications view model", () => {
     });
   });
 
-  it("should notify about new last seen notification id when displaying new notifications", () => {
+  it("should notify about new last seen notification id when displaying new notifications and mark notifications as read", () => {
     const setLastSeenNotificationId = vitest.fn();
     const state = stateBuilder()
       .withNotifications([
@@ -168,15 +174,20 @@ describe("Notifications view model", () => {
         },
       ])
       .build();
+    const store = createTestStore({}, state);
     const viewModel = createTestNotificationsViewModel({
       lastSeenNotificationId: "n1-id",
       setLastSeenNotificationId,
-    })(state);
+      dispatch: store.dispatch,
+    })(store.getState());
 
     if (viewModel.type === NotificationsViewModelType.NotificationsLoaded) {
       viewModel.displayNewNotifications();
 
       expect(setLastSeenNotificationId).toHaveBeenCalledWith("n2-id");
+      expect(
+        store.getDispatchedUseCaseArgs(markAllNotificationsAsRead)
+      ).toEqual(EMPTY_ARGS);
     }
   });
 });

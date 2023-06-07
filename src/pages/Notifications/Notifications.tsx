@@ -8,21 +8,24 @@ import {
   Text,
   keyframes,
 } from "@chakra-ui/react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   NotificationsViewModelType,
   createNotificationsViewModel,
 } from "./notifications.viewmodel";
 import { exhaustiveGuard } from "@/lib/common/utils/exhaustive-guard";
 import { useState } from "react";
+import { AppDispatch } from "@/lib/create-store";
 
 export const Notifications = () => {
   const [lastSeenNotificationId, setLastSeenNotificationId] = useState("");
+  const dispatch = useDispatch<AppDispatch>();
   const viewModel = useSelector(
     createNotificationsViewModel({
       now: new Date(),
       lastSeenNotificationId,
       setLastSeenNotificationId,
+      dispatch,
     })
   );
 
@@ -79,4 +82,6 @@ export const Notifications = () => {
     default:
       exhaustiveGuard(viewModel);
   }
+
+  return null;
 };

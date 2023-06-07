@@ -5,6 +5,7 @@ import {
   Notification,
   notificationsAdapter,
 } from "../model/notification.entity";
+import { markAllNotificationsAsRead } from "../usecases/mark-all-notifications-as-read.usecase";
 
 type NotificationsSliceState = EntityState<Notification> & {
   loading: boolean;
@@ -28,6 +29,20 @@ export const notificationsSlice = createSlice({
       .addCase(getNotifications.fulfilled, (state, action) => {
         state.loading = false;
         notificationsAdapter.addMany(state, action.payload);
+      })
+      .addCase(markAllNotificationsAsRead.pending, (state) => {
+        const notificationsIds = notificationsAdapter
+          .getSelectors()
+          .selectIds(state);
+        notificationsAdapter.updateMany(
+          state,
+          notificationsIds.map((notificationId) => ({
+            id: notificationId,
+            changes: {
+              read: true,
+            },
+          }))
+        );
       });
   },
 });

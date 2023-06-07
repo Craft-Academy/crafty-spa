@@ -5,6 +5,7 @@ import { Notification } from "../model/notification.entity";
 import { AppStore, createTestStore } from "@/lib/create-store";
 import { getNotifications } from "../usecases/get-notifications.usecase";
 import { selectAreNotificationsLoading } from "../slices/notifications.slice";
+import { markAllNotificationsAsRead } from "../usecases/mark-all-notifications-as-read.usecase";
 
 export const createNotificationFixture = (
   testStateBuilderProvider = stateBuilderProvider()
@@ -19,6 +20,11 @@ export const createNotificationFixture = (
         Object.entries(existingNotificationsForUser)
       );
     },
+    givenExistingNotifications(notifications: Notification[]) {
+      testStateBuilderProvider.setState((builder) =>
+        builder.withNotifications(notifications)
+      );
+    },
     async whenRetrievingNotifications() {
       store = createTestStore(
         { notificationGateway },
@@ -26,11 +32,27 @@ export const createNotificationFixture = (
       );
       return store.dispatch(getNotifications());
     },
+    async whenAllNotificationsAreMarkedAsRead() {
+      store = createTestStore(
+        { notificationGateway },
+        testStateBuilderProvider.getState()
+      );
+      return store.dispatch(markAllNotificationsAsRead());
+    },
     thenNotificationsShouldBeLoading() {
       const areNotificationsLoading = selectAreNotificationsLoading(
         store.getState()
       );
       expect(areNotificationsLoading).toBe(true);
+    },
+    thenNotificationsShouldHaveBeenMarkedRemotely({
+      forUser,
+    }: {
+      forUser: string;
+    }) {
+      expect(notificationGateway.lastMarkedNotificationsAsReadForUser).toEqual(
+        forUser
+      );
     },
     thenNotificationsShouldBe(expectedNotifications: Notification[]) {
       const expectedState = stateBuilder(testStateBuilderProvider.getState())
