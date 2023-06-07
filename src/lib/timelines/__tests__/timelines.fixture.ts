@@ -24,6 +24,7 @@ type ExpectedTimeline = {
     text: string;
     author: User;
     publishedAt: string;
+    likes: string[];
   }[];
 };
 
@@ -48,6 +49,7 @@ export const createTimelinesFixture = (
         text: string;
         author: User;
         publishedAt: string;
+        likes: string[];
       }[];
     }) {
       timelineGateway.timelinesByUser.set(timeline.user.id, timeline);

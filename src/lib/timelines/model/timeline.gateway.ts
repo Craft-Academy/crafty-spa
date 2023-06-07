@@ -9,6 +9,7 @@ export type GetUserTimelineResponse = {
       text: string;
       author: User;
       publishedAt: string;
+      likes: string[];
     }[];
   };
 };

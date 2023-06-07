@@ -33,7 +33,10 @@ export const messagesSlice = createSlice({
         (state, action) => {
           messagesAdapter.addMany(
             state,
-            action.payload.messages.map((m) => ({ ...m, author: m.author.id }))
+            action.payload.messages.map((m) => ({
+              ...m,
+              author: m.author.id,
+            }))
           );
         }
       );

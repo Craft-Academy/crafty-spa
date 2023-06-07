@@ -25,6 +25,7 @@ export const postMessage = createAppAsyncThunk(
       text: params.text,
       author: authUser,
       publishedAt: dateProvider.getNow().toISOString(),
+      likes: [],
     };
     dispatch(postMessagePending(message));
 

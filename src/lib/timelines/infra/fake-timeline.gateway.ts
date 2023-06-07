@@ -17,6 +17,7 @@ export class FakeTimelineGateway implements TimelineGateway {
         text: string;
         author: User;
         publishedAt: string;
+        likes: string[];
       }[];
     }
   >();

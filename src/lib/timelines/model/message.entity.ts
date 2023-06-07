@@ -5,6 +5,7 @@ export type Message = {
   text: string;
   author: string;
   publishedAt: string;
+  likes: string[];
 };
 
 export const messagesAdapter = createEntityAdapter<Message>();

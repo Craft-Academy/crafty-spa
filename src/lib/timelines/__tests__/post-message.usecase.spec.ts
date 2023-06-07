@@ -51,6 +51,7 @@ describe("Feature: Posting a message on a timeline", () => {
           text: "Hello it's Alice",
           author: alice,
           publishedAt: "2023-05-26T10:00:00.000Z",
+          likes: [],
         },
       ],
     });
@@ -73,6 +74,7 @@ describe("Feature: Posting a message on a timeline", () => {
           text: "Hello it's Alice",
           author: alice,
           publishedAt: "2023-05-26T10:00:00.000Z",
+          likes: [],
         },
       ],
     });
@@ -99,12 +101,14 @@ describe("Feature: Posting a message on a timeline", () => {
           text: "Hello it's Alice",
           author: alice,
           publishedAt: "2023-05-26T10:00:00.000Z",
+          likes: [],
         },
         {
           id: "msg2-id",
           text: "Hello again",
           author: alice,
           publishedAt: "2023-05-26T11:00:00.000Z",
+          likes: [],
         },
       ],
     });
@@ -140,6 +144,7 @@ describe("Feature: Posting a message on a timeline", () => {
           text: "Hello it's Alice",
           author: alice,
           publishedAt: "2023-05-26T10:00:00.000Z",
+          likes: [],
         },
       ],
       messageNotPosted: { messageId: "msg1-id", error: "Cannot post message" },
@@ -163,6 +168,7 @@ describe("Feature: Posting a message on a timeline", () => {
           author: alice,
           text: "Hello it's Alice",
           publishedAt: "2023-05-26T09:59:00.000Z",
+          likes: [],
         },
       ],
     });
@@ -185,6 +191,7 @@ describe("Feature: Posting a message on a timeline", () => {
           text: "Hello it's Alice",
           author: alice,
           publishedAt: "2023-05-26T10:00:00.000Z",
+          likes: [],
         },
       ],
       messageNotPosted: undefined,

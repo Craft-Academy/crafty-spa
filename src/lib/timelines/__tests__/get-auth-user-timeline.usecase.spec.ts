@@ -6,6 +6,7 @@ import {
 } from "@/lib/auth/__tests__/auth.fixture";
 import { stateBuilderProvider } from "@/lib/state-builder";
 import { buildUser } from "@/lib/users/__tests__/user.builder";
+import { buildMessage } from "./message.builder";
 
 describe("Feature: Retrieving authenticated user's timeline", () => {
   let fixture: TimelinesFixture;
@@ -27,22 +28,30 @@ describe("Feature: Retrieving authenticated user's timeline", () => {
       username: "Bob",
       profilePicture: "bob.png",
     });
+    const bobMessage = buildMessage({
+      id: "msg1-id",
+      text: "Hello it's Bob",
+      author: bob.id,
+      publishedAt: "2023-05-16T12:06:00.000Z",
+    });
+    const aliceMessage = buildMessage({
+      id: "msg2-id",
+      text: "Hello it's Alice",
+      author: alice.id,
+      publishedAt: "2023-05-16T12:05:00.000Z",
+    });
     authFixture.givenAuthenticatedUserIs("alice-id");
     fixture.givenExistingRemoteTimeline({
       id: "alice-timeline-id",
       user: alice,
       messages: [
         {
-          id: "msg1-id",
-          text: "Hello it's Bob",
+          ...bobMessage,
           author: bob,
-          publishedAt: "2023-05-16T12:06:00.000Z",
         },
         {
-          id: "msg2-id",
-          text: "Hello it's Alice",
+          ...aliceMessage,
           author: alice,
-          publishedAt: "2023-05-16T12:05:00.000Z",
         },
       ],
     });
@@ -63,12 +72,14 @@ describe("Feature: Retrieving authenticated user's timeline", () => {
           text: "Hello it's Bob",
           author: bob,
           publishedAt: "2023-05-16T12:06:00.000Z",
+          likes: [],
         },
         {
           id: "msg2-id",
           text: "Hello it's Alice",
           author: alice,
           publishedAt: "2023-05-16T12:05:00.000Z",
+          likes: [],
         },
       ],
     });
