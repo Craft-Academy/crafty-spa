@@ -34,3 +34,6 @@ export const notificationsSlice = createSlice({
 
 export const selectAreNotificationsLoading = (state: RootState) =>
   state.notifications.loading;
+
+export const selectNotifications = (state: RootState) =>
+  notificationsAdapter.getSelectors().selectAll(state.notifications);

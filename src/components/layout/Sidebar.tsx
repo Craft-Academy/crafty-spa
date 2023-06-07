@@ -10,8 +10,11 @@ import {
 import { NavButton } from "./NavButton";
 import { UserProfile } from "./UserProfile";
 import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { createSidebarViewModel } from "./sidebar.viewmodel";
 
 export const Sidebar = () => {
+  const viewModel = useSelector(createSidebarViewModel);
   return (
     <Flex
       flex="1"
@@ -31,9 +34,13 @@ export const Sidebar = () => {
           <Stack spacing="1">
             <NavButton label="Home" icon={FiHome} to="/home" />
             <NavButton
-              label="Notifications (1)"
+              label={viewModel.notificationLabel}
               icon={FiBell}
-              endElement={<Circle size="2" bg="blue.400"></Circle>}
+              endElement={
+                viewModel.unreadNotifications && (
+                  <Circle size="2" bg="blue.400"></Circle>
+                )
+              }
               to="/notifications"
             />
           </Stack>

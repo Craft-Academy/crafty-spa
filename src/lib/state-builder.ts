@@ -59,6 +59,7 @@ const withNotLoadingUser = createAction<{ userId: string }>(
 const withNotificationsNotLoading = createAction<void>(
   "withNotificationsNotLoading"
 );
+const withNotificationsLoading = createAction<void>("withNotificationsLoading");
 const withNotifications = createAction<Notification[]>("withNotifications");
 
 const reducer = createReducer(initialState, (builder) => {
@@ -133,6 +134,9 @@ const reducer = createReducer(initialState, (builder) => {
     .addCase(withNotificationsNotLoading, (state) => {
       state.notifications.loading = false;
     })
+    .addCase(withNotificationsLoading, (state) => {
+      state.notifications.loading = true;
+    })
     .addCase(withNotifications, (state, action) => {
       notificationsAdapter.addMany(state.notifications, action.payload);
     });
@@ -163,6 +167,7 @@ export const stateBuilder = (baseState = initialState) => {
     withFollowingNotLoading: reduce(withFollowingNotLoading),
     withUsers: reduce(withUsers),
     withNotLoadingUser: reduce(withNotLoadingUser),
+    withNotificationsLoading: reduce(withNotificationsLoading),
     withNotificationsNotLoading: reduce(withNotificationsNotLoading),
     withNotifications: reduce(withNotifications),
     build(): RootState {
