@@ -1,16 +1,26 @@
 import { CardContent } from "@/components/profile/CardContent";
 import { CardWithAvatar } from "@/components/profile/CardWithAvatar";
 import { NavTab } from "@/components/profile/NavTab";
-import { Box, Button, Heading, TabList, Tabs } from "@chakra-ui/react";
-import { useSelector } from "react-redux";
+import { Box, Button, Heading, Input, TabList, Tabs } from "@chakra-ui/react";
+import { useDispatch, useSelector } from "react-redux";
 import { Outlet, useParams } from "react-router-dom";
 import { createProfileLayoutViewModel } from "./profile-layout.viewmodel";
 import { HiPhotograph } from "react-icons/hi";
+import { ChangeEvent, useRef } from "react";
+import { AppDispatch } from "@/lib/create-store";
 
 export const ProfileLayout = () => {
+  const fileInputRef = useRef(null);
   const params = useParams();
   const userId = params.userId as string;
-  const viewModel = useSelector(createProfileLayoutViewModel({ userId }));
+  const dispatch = useDispatch<AppDispatch>();
+  const viewModel = useSelector(
+    createProfileLayoutViewModel({ userId, dispatch })
+  );
+
+  const handleProfilePictureChange = (event: ChangeEvent<HTMLInputElement>) => {
+    viewModel.onClick(event.target.files![0]);
+  };
 
   return (
     <>
@@ -21,14 +31,26 @@ export const ProfileLayout = () => {
           avatarProps={{
             src: viewModel.profilePicture,
             name: viewModel.username,
-            uploading: false,
+            uploading: viewModel.profilePictureUploading,
           }}
           action={
             viewModel.isAuthUserProfile ? (
               <>
-                <Button size="sm" leftIcon={<HiPhotograph />}>
+                <Button
+                  size="sm"
+                  leftIcon={<HiPhotograph />}
+                  onClick={() => (fileInputRef.current as any).click()}
+                >
                   Upload photo
                 </Button>
+                <Input
+                  type="file"
+                  accept="image/png, image/jpeg"
+                  name="profilePicture"
+                  ref={fileInputRef}
+                  onChange={handleProfilePictureChange}
+                  hidden
+                />
               </>
             ) : null
           }

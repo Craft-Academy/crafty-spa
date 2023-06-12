@@ -10,6 +10,7 @@ import {
   UserGateway,
 } from "../model/user.gateway";
 import { User } from "../model/user.entity";
+import { Picture } from "../model/picture";
 
 export class FakeDataUserGateway implements UserGateway {
   getUser(userId: string): Promise<User> {
@@ -141,6 +142,24 @@ export class FakeDataUserGateway implements UserGateway {
         );
         resolve();
       }, 500)
+    );
+  }
+
+  createLocalObjectUrlFromFile(picture: Picture): string {
+    return URL.createObjectURL(picture);
+  }
+
+  uploadProfilePicture({
+    userId,
+    picture,
+  }: {
+    userId: string;
+    picture: Picture;
+  }): Promise<string> {
+    return new Promise((resolve) =>
+      setTimeout(() => {
+        resolve(this.createLocalObjectUrlFromFile(picture));
+      }, 2000)
     );
   }
 }

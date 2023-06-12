@@ -55,6 +55,9 @@ const withFollowingNotLoading = createAction<{ of: string }>(
 );
 const withUsers = createAction<User[]>("withUsers");
 const withProfilePictureUploading = createAction("withProfilePictureUploading");
+const withProfilePictureNotUploading = createAction(
+  "withProfilePictureNotUploading"
+);
 const withNotLoadingUser = createAction<{ userId: string }>(
   "withNotLoadingUser"
 );
@@ -138,6 +141,9 @@ const reducer = createReducer(initialState, (builder) => {
     .addCase(withProfilePictureUploading, (state) => {
       state.users.users.profilePictureUploading = true;
     })
+    .addCase(withProfilePictureNotUploading, (state) => {
+      state.users.users.profilePictureUploading = false;
+    })
     .addCase(withNotificationsNotLoading, (state) => {
       state.notifications.loading = false;
     })
@@ -182,6 +188,7 @@ export const stateBuilder = (baseState = initialState) => {
     withUsers: reduce(withUsers),
     withNotLoadingUser: reduce(withNotLoadingUser),
     withProfilePictureUploading: reduce(withProfilePictureUploading),
+    withProfilePictureNotUploading: reduce(withProfilePictureNotUploading),
     withNotificationsLoading: reduce(withNotificationsLoading),
     withNotificationsNotLoading: reduce(withNotificationsNotLoading),
     withNotifications: reduce(withNotifications),

@@ -127,4 +127,4 @@ export const selectIsUserLoading = (userId: string, rootState: RootState) =>
   rootState.users.users.loadingUsers[userId] ?? false;
 
 export const selectIsProfilePictureUploading = (rootState: RootState) =>
-  undefined;
+  rootState.users.users.profilePictureUploading;

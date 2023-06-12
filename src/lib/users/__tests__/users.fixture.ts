@@ -131,13 +131,6 @@ export const createUsersFixture = (
 
       expect(isLoading).toEqual(true);
     },
-    thenProfilePictureShouldBeUploading() {
-      const isProfilePictureUploading = selectIsProfilePictureUploading(
-        store.getState()
-      );
-
-      expect(isProfilePictureUploading).toBe(true);
-    },
     thenRetrievedUserIs(expectedUser: User) {
       const expectedState = stateBuilder()
         .withUsers([expectedUser])

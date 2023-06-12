@@ -1,9 +1,20 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vitest } from "vitest";
 import { createProfileLayoutViewModel } from "../profile-layout.viewmodel";
 import { stateBuilder } from "@/lib/state-builder";
 import { buildUser } from "@/lib/users/__tests__/user.builder";
+import { AppDispatch, createTestStore } from "@/lib/create-store";
+import { Picture } from "@/lib/users/model/picture";
+import { uploadProfilePicture } from "@/lib/users/usecases/upload-profile-picture.usecase";
 
-describe("Profile layout view model", () => {
+const createTestProfileLayoutViewModel = ({
+  userId,
+  dispatch = vitest.fn(),
+}: {
+  userId: string;
+  dispatch?: AppDispatch;
+}) => createProfileLayoutViewModel({ userId, dispatch });
+
+describe.only("Profile layout view model", () => {
   it("returns the user information", () => {
     const state = stateBuilder()
       .withUsers([
@@ -15,7 +26,7 @@ describe("Profile layout view model", () => {
       ])
       .build();
 
-    const viewModel = createProfileLayoutViewModel({ userId: "alice-id" })(
+    const viewModel = createTestProfileLayoutViewModel({ userId: "alice-id" })(
       state
     );
 
@@ -37,9 +48,9 @@ describe("Profile layout view model", () => {
         })
         .build();
 
-      const viewModel = createProfileLayoutViewModel({ userId: "alice-id" })(
-        state
-      );
+      const viewModel = createTestProfileLayoutViewModel({
+        userId: "alice-id",
+      })(state);
 
       expect(viewModel.isAuthUserProfile).toBe(true);
     }
@@ -47,9 +58,9 @@ describe("Profile layout view model", () => {
     {
       const state = stateBuilder().build();
 
-      const viewModel = createProfileLayoutViewModel({ userId: "alice-id" })(
-        state
-      );
+      const viewModel = createTestProfileLayoutViewModel({
+        userId: "alice-id",
+      })(state);
 
       expect(viewModel.isAuthUserProfile).toBe(false);
     }
@@ -58,7 +69,7 @@ describe("Profile layout view model", () => {
   it("returns the correct profile links", () => {
     const state = stateBuilder().build();
 
-    const viewModel = createProfileLayoutViewModel({ userId: "alice-id" })(
+    const viewModel = createTestProfileLayoutViewModel({ userId: "alice-id" })(
       state
     );
 
@@ -80,13 +91,77 @@ describe("Profile layout view model", () => {
       ])
       .build();
 
-    const viewModel = createProfileLayoutViewModel({ userId: "alice-id" })(
+    const viewModel = createTestProfileLayoutViewModel({ userId: "alice-id" })(
       state
     );
 
     expect(viewModel.tabs).toEqual({
       following: "Following (10)",
       followers: "Followers (5)",
+    });
+  });
+
+  it("should indicate that the picture is loading when on auth user profile and the pictures is indeed loading", () => {
+    {
+      const state = stateBuilder()
+        .withAuthUser({
+          authUser: "alice-id",
+        })
+        .withProfilePictureUploading(undefined)
+        .build();
+
+      const viewModel = createTestProfileLayoutViewModel({
+        userId: "alice-id",
+      })(state);
+
+      expect(viewModel.profilePictureUploading).toBe(true);
+    }
+
+    {
+      const state = stateBuilder()
+        .withAuthUser({
+          authUser: "alice-id",
+        })
+        .withProfilePictureNotUploading(undefined)
+        .build();
+
+      const viewModel = createTestProfileLayoutViewModel({
+        userId: "alice-id",
+      })(state);
+
+      expect(viewModel.profilePictureUploading).toBe(false);
+    }
+
+    {
+      const state = stateBuilder()
+        .withAuthUser({
+          authUser: "alice-id",
+        })
+        .withProfilePictureUploading(undefined)
+        .build();
+
+      const viewModel = createTestProfileLayoutViewModel({ userId: "bob-id" })(
+        state
+      );
+
+      expect(viewModel.profilePictureUploading).toBe(false);
+    }
+  });
+
+  it("should call the uploadProfilePicture use case on click", async () => {
+    const store = createTestStore();
+    const viewModel = createTestProfileLayoutViewModel({
+      userId: "alice-id",
+      dispatch: store.dispatch,
+    })(store.getState());
+    const picture = {
+      name: "alice.png",
+    } as Picture;
+
+    await viewModel.onClick(picture);
+
+    expect(store.getDispatchedUseCaseArgs(uploadProfilePicture)).toEqual({
+      picture,
     });
   });
 });
