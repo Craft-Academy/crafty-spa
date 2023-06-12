@@ -14,6 +14,7 @@ export class FakeMessageGateway implements MessageGateway {
     userId: string;
     id: string;
   };
+  lastUnlikedMessageId!: string;
   postMessage(message: {
     id: string;
     author: string;
@@ -32,6 +33,10 @@ export class FakeMessageGateway implements MessageGateway {
     messageId: string;
   }): Promise<void> {
     this.lastLikeSent = like;
+    return Promise.resolve();
+  }
+  unlikeMessage(likeId: string): Promise<void> {
+    this.lastUnlikedMessageId = likeId;
     return Promise.resolve();
   }
 }

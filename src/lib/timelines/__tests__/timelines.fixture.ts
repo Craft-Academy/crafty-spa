@@ -17,8 +17,8 @@ import { getAuthUserTimeline } from "../usecases/get-auth-user-timeline.usecase"
 import { User } from "@/lib/users/model/user.entity";
 import { Message } from "../model/message.entity";
 import { likeMessage } from "../usecases/like-message.usecase";
-import { selectAuthUserId } from "@/lib/auth/reducer";
 import { Like } from "../model/like.entity";
+import { unlikeMessage } from "../usecases/unlike-message.usecase";
 
 type ExpectedTimeline = {
   user: User;
@@ -104,6 +104,9 @@ export const createTimelinesFixture = (
     givenLikeMessageWillFail() {
       messageGateway = new FailingMessageGateway();
     },
+    givenUnlikeMessageWillFail() {
+      messageGateway = new FailingMessageGateway();
+    },
     async whenRetrievingUserTimeline(userId: string) {
       store = createTestStore(
         {
@@ -141,6 +144,16 @@ export const createTimelinesFixture = (
       );
       return store.dispatch(likeMessage(likeMessageParams));
     },
+    async whenAuthUserUnlikesMessage(unlikeMessageParams: {
+      likeId: string;
+      messageId: string;
+    }) {
+      store = createTestStore(
+        { dateProvider, messageGateway },
+        testStateBuilderProvider.getState()
+      );
+      return store.dispatch(unlikeMessage(unlikeMessageParams));
+    },
     thenTheTimelineOfUserShouldBeLoading(user: string) {
       const isUserTimelineLoading = selectIsUserTimelineLoading(
         user,
@@ -168,6 +181,11 @@ export const createTimelinesFixture = (
       id: string;
     }) {
       expect((messageGateway as FakeMessageGateway).lastLikeSent).toEqual(like);
+    },
+    thenMessageShouldHaveBeenUnliked({ id }: { id: string }) {
+      expect(
+        (messageGateway as FakeMessageGateway).lastUnlikedMessageId
+      ).toEqual(id);
     },
     thenTimelineShouldBe(
       expectedTimeline: ExpectedTimeline & {

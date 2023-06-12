@@ -11,4 +11,5 @@ export interface MessageGateway {
     userId: string;
     messageId: string;
   }): Promise<void>;
+  unlikeMessage(likeId: string): Promise<void>;
 }
