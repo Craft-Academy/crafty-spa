@@ -2,7 +2,7 @@ import { expect } from "vitest";
 import { FakeAuthGateway } from "@/lib/auth/infra/fake-auth.gateway";
 import { FakeTimelineGateway } from "../infra/fake-timeline.gateway";
 import { stateBuilder, stateBuilderProvider } from "@/lib/state-builder";
-import { AppStore, createTestStore } from "@/lib/create-store";
+import { AppStore, RootState, createTestStore } from "@/lib/create-store";
 import { selectIsUserTimelineLoading } from "../slices/timelines.slice";
 import { getUserTimeline } from "../usecases/get-user-timeline.usecase";
 import {
@@ -15,6 +15,10 @@ import { FailingMessageGateway } from "../infra/failing-message.gateway";
 import { MessageGateway } from "../model/message.gateway";
 import { getAuthUserTimeline } from "../usecases/get-auth-user-timeline.usecase";
 import { User } from "@/lib/users/model/user.entity";
+import { Message } from "../model/message.entity";
+import { likeMessage } from "../usecases/like-message.usecase";
+import { selectAuthUserId } from "@/lib/auth/reducer";
+import { Like } from "../model/like.entity";
 
 type ExpectedTimeline = {
   user: User;
@@ -72,6 +76,14 @@ export const createTimelinesFixture = (
           .withNotLoadingTimelineOf({ user: timeline.user.id })
       );
     },
+    givenMessage(message: Message) {
+      testStateBuilderProvider.setState((builder) =>
+        builder.withMessages([message])
+      );
+    },
+    givenLike(like: Like) {
+      testStateBuilderProvider.setState((builder) => builder.withLikes([like]));
+    },
     givenPostMessageWillFailWithError(error: string) {
       messageGateway = new FailingMessageGateway(error);
     },
@@ -88,6 +100,9 @@ export const createTimelinesFixture = (
           error,
         })
       );
+    },
+    givenLikeMessageWillFail() {
+      messageGateway = new FailingMessageGateway();
     },
     async whenRetrievingUserTimeline(userId: string) {
       store = createTestStore(
@@ -116,6 +131,16 @@ export const createTimelinesFixture = (
       );
       return store.dispatch(postMessage(postMessageParams));
     },
+    async whenAuthUserLikesMessage(likeMessageParams: {
+      messageId: string;
+      likeId: string;
+    }) {
+      store = createTestStore(
+        { dateProvider, messageGateway },
+        testStateBuilderProvider.getState()
+      );
+      return store.dispatch(likeMessage(likeMessageParams));
+    },
     thenTheTimelineOfUserShouldBeLoading(user: string) {
       const isUserTimelineLoading = selectIsUserTimelineLoading(
         user,
@@ -136,6 +161,13 @@ export const createTimelinesFixture = (
       expect((messageGateway as FakeMessageGateway).lastPostedMessage).toEqual(
         expectedPostedMessage
       );
+    },
+    thenMessageShouldHaveBeenLiked(like: {
+      messageId: string;
+      userId: string;
+      id: string;
+    }) {
+      expect((messageGateway as FakeMessageGateway).lastLikeSent).toEqual(like);
     },
     thenTimelineShouldBe(
       expectedTimeline: ExpectedTimeline & {
@@ -164,6 +196,11 @@ export const createTimelinesFixture = (
               expectedTimeline.messageNotPosted
             );
       expect(store.getState()).toEqual(expectedState.build());
+    },
+    thenAppStateShouldBe(stateUpdater: (initialState: RootState) => RootState) {
+      const expectedState = stateUpdater(testStateBuilderProvider.getState());
+
+      expect(store.getState()).toEqual(expectedState);
     },
   };
 };

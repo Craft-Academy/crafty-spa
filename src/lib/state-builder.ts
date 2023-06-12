@@ -14,6 +14,7 @@ import {
   Notification,
   notificationsAdapter,
 } from "./notifications/model/notification.entity";
+import { Like, likesAdapter } from "./timelines/model/like.entity";
 
 const initialState = rootReducer(undefined, createAction(""));
 
@@ -61,6 +62,7 @@ const withNotificationsNotLoading = createAction<void>(
 );
 const withNotificationsLoading = createAction<void>("withNotificationsLoading");
 const withNotifications = createAction<Notification[]>("withNotifications");
+const withLikes = createAction<Like[]>("withLikes");
 
 const reducer = createReducer(initialState, (builder) => {
   builder
@@ -86,7 +88,7 @@ const reducer = createReducer(initialState, (builder) => {
         false;
     })
     .addCase(withMessages, (state, action) => {
-      messagesAdapter.addMany(state.timelines.messages, action.payload);
+      messagesAdapter.upsertMany(state.timelines.messages, action.payload);
     })
     .addCase(withMessageNotPosted, (state, action) => {
       state.timelines.messages.messagesNotPosted[action.payload.messageId] =
@@ -139,6 +141,9 @@ const reducer = createReducer(initialState, (builder) => {
     })
     .addCase(withNotifications, (state, action) => {
       notificationsAdapter.upsertMany(state.notifications, action.payload);
+    })
+    .addCase(withLikes, (state, action) => {
+      likesAdapter.upsertMany(state.timelines.likes, action.payload);
     });
 });
 
@@ -170,6 +175,7 @@ export const stateBuilder = (baseState = initialState) => {
     withNotificationsLoading: reduce(withNotificationsLoading),
     withNotificationsNotLoading: reduce(withNotificationsNotLoading),
     withNotifications: reduce(withNotifications),
+    withLikes: reduce(withLikes),
     build(): RootState {
       return baseState;
     },

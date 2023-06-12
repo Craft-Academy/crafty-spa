@@ -7,6 +7,10 @@ import {
   postMessage,
   postMessagePending,
 } from "../usecases/post-message.usecase";
+import {
+  likeMessage,
+  likeMessagePending,
+} from "../usecases/like-message.usecase";
 
 export type MessagesSliceState = EntityState<Message> & {
   messagesNotPosted: { [messageId: string]: string };
@@ -27,6 +31,33 @@ export const messagesSlice = createSlice({
       .addCase(postMessage.rejected, (state, action) => {
         state.messagesNotPosted[action.meta.arg.messageId] =
           action.error.message ?? "";
+      })
+      .addCase(likeMessagePending, (state, action) => {
+        const message = messagesAdapter
+          .getSelectors()
+          .selectById(state, action.payload.messageId);
+        if (!message) return;
+
+        messagesAdapter.updateOne(state, {
+          id: action.payload.messageId,
+          changes: {
+            likes: [action.payload.id, ...message.likes],
+          },
+        });
+      })
+      .addCase(likeMessage.rejected, (state, action) => {
+        const { messageId, likeId } = action.meta.arg;
+        const message = messagesAdapter
+          .getSelectors()
+          .selectById(state, messageId);
+        if (!message) return;
+
+        messagesAdapter.updateOne(state, {
+          id: messageId,
+          changes: {
+            likes: message.likes.filter((id) => likeId !== id),
+          },
+        });
       })
       .addMatcher(
         isAnyOf(getAuthUserTimeline.fulfilled, getUserTimeline.fulfilled),
