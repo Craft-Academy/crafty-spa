@@ -12,12 +12,13 @@ import { RealDateProvider } from "./lib/timelines/infra/real-date-provider.ts";
 import { FakeDataUserGateway } from "./lib/users/infra/fake-data-user.gateway.ts";
 import { FakeStorageNotificationGateway } from "./lib/notifications/infra/fake-storage.notification.gateway.ts";
 import { HttpTimelineGateway } from "./lib/timelines/infra/http-timeline.gateway.ts";
+import { FirebaseAuthGateway } from "./lib/auth/infra/firebase-auth.gateway.ts";
 
 const fakeAuthGateway = new FakeAuthGateway(500);
 fakeAuthGateway.willSucceedForGoogleAuthForUser = [...users.values()][0];
 fakeAuthGateway.willSucceedForGithubAuthForUser = [...users.values()][1];
 const messageGateway = new FakeMessageGateway();
-const authGateway = new FakeStorageAuthGateway(fakeAuthGateway);
+const authGateway = new FirebaseAuthGateway();
 const userGateway = new FakeDataUserGateway();
 const notificationGateway = new FakeStorageNotificationGateway();
 const dateProvider = new RealDateProvider();
