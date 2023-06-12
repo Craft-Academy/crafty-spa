@@ -58,10 +58,10 @@ export const Sidebar = () => {
             <NavButton label="Sign Out" icon={FiPower} to="/signout" />
           </Stack>
           <Divider borderColor="bg-accent-subtle" />
-          <Link to={`/u/pierre`}>
+          <Link to={viewModel.authUser.profileUrl}>
             <UserProfile
-              username={"Pierre"}
-              profilePicture={"https://picsum.photos/200?random=pierre"}
+              username={viewModel.authUser.username}
+              profilePicture={viewModel.authUser.profilePicture}
             />
           </Link>
         </Stack>

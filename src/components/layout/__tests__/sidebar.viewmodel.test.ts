@@ -8,7 +8,7 @@ describe("Sidebar view model", () => {
 
     const viewModel = createSidebarViewModel(state);
 
-    expect(viewModel).toEqual({
+    expect(viewModel).toMatchObject({
       notificationLabel: "Notifications",
       unreadNotifications: false,
     });
@@ -30,7 +30,7 @@ describe("Sidebar view model", () => {
 
     const viewModel = createSidebarViewModel(state);
 
-    expect(viewModel).toEqual({
+    expect(viewModel).toMatchObject({
       notificationLabel: "Notifications (1)",
       unreadNotifications: true,
     });
@@ -62,9 +62,29 @@ describe("Sidebar view model", () => {
 
     const viewModel = createSidebarViewModel(state);
 
-    expect(viewModel).toEqual({
+    expect(viewModel).toMatchObject({
       notificationLabel: "Notifications (2)",
       unreadNotifications: true,
+    });
+  });
+
+  it("show the authenticated user with a link to the profile", () => {
+    const state = stateBuilder()
+      .withAuthUser({
+        authUser: {
+          id: "alice-id",
+          username: "Alice",
+          profilePicture: "alice.png",
+        },
+      })
+      .build();
+
+    const viewModel = createSidebarViewModel(state);
+
+    expect(viewModel.authUser).toEqual({
+      username: "Alice",
+      profilePicture: "alice.png",
+      profileUrl: "/u/alice-id",
     });
   });
 });

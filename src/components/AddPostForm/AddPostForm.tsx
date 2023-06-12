@@ -11,7 +11,7 @@ import {
 } from "@chakra-ui/react";
 import { nanoid } from "@reduxjs/toolkit";
 import { ChangeEvent, FormEvent, useMemo, useRef, useState } from "react";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { createAddPostFormViewModel } from "./add-post-form.viewmodel";
 
@@ -39,14 +39,17 @@ export const AddPostForm = ({
     remaining,
     inputBackroundColor,
     charCounterColor,
-  } = createAddPostFormViewModel({
-    dispatch,
-    messageId: nanoid(5),
-    timelineId,
-    maxCharacters: 100,
-    charactersCount,
-    setCharactersCount,
-  });
+    authUser,
+  } = useSelector(
+    createAddPostFormViewModel({
+      dispatch,
+      messageId: nanoid(5),
+      timelineId,
+      maxCharacters: 100,
+      charactersCount,
+      setCharactersCount,
+    })
+  );
   const textarea = useRef<HTMLTextAreaElement>(null);
 
   const handleSubmit = (event: FormEvent<IAddPostForm>) => {
@@ -61,8 +64,8 @@ export const AddPostForm = ({
   return (
     <form onSubmit={handleSubmit}>
       <Stack direction="row" spacing="4">
-        <Link to={`/`}>
-          <Avatar src="https://picsum.photos/200?random=pierre" boxSize="12" />
+        <Link to={authUser.profileUrl}>
+          <Avatar src={authUser.profilePicture} boxSize="12" />
         </Link>
         <FormControl id="text">
           <Textarea

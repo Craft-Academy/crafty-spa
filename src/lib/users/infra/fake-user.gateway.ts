@@ -1,3 +1,4 @@
+import { Picture } from "../model/picture";
 import { User } from "../model/user.entity";
 import {
   GetUserFollowersResponse,
@@ -11,6 +12,9 @@ export class FakeUserGateway implements UserGateway {
   users = new Map<string, User>();
   lastFollowedUserBy!: { user: string; followingId: string };
   lastUnfollowedUserBy!: { user: string; followingId: string };
+  previewUrlByPicture = new Map<Picture, string>();
+  uploadedPictureUrl!: string;
+  uploadedPictureByUser = new Map<string, Picture>();
   getUser(userId: string): Promise<User> {
     const user = this.users.get(userId);
     if (user) {
@@ -88,5 +92,21 @@ export class FakeUserGateway implements UserGateway {
     this.willRespondForGetUserFollowing.set(user, {
       following,
     });
+  }
+
+  createLocalObjectUrlFromFile(picture: Picture): string {
+    return this.previewUrlByPicture.get(picture) ?? "";
+  }
+
+  uploadProfilePicture({
+    userId,
+    picture,
+  }: {
+    userId: string;
+    picture: Picture;
+  }): Promise<string> {
+    this.uploadedPictureByUser.set(userId, picture);
+
+    return Promise.resolve(this.uploadedPictureUrl);
   }
 }

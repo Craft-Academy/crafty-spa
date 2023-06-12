@@ -54,6 +54,7 @@ const withFollowingNotLoading = createAction<{ of: string }>(
   "withFollowingNotLoading"
 );
 const withUsers = createAction<User[]>("withUsers");
+const withProfilePictureUploading = createAction("withProfilePictureUploading");
 const withNotLoadingUser = createAction<{ userId: string }>(
   "withNotLoadingUser"
 );
@@ -129,10 +130,13 @@ const reducer = createReducer(initialState, (builder) => {
       state.users.relationships.loadingFollowingOf[action.payload.of] = false;
     })
     .addCase(withUsers, (state, action) => {
-      usersAdapter.addMany(state.users.users, action.payload);
+      usersAdapter.upsertMany(state.users.users, action.payload);
     })
     .addCase(withNotLoadingUser, (state, action) => {
       state.users.users.loadingUsers[action.payload.userId] = false;
+    })
+    .addCase(withProfilePictureUploading, (state) => {
+      state.users.users.profilePictureUploading = true;
     })
     .addCase(withNotificationsNotLoading, (state) => {
       state.notifications.loading = false;
@@ -177,6 +181,7 @@ export const stateBuilder = (baseState = initialState) => {
     withFollowingNotLoading: reduce(withFollowingNotLoading),
     withUsers: reduce(withUsers),
     withNotLoadingUser: reduce(withNotLoadingUser),
+    withProfilePictureUploading: reduce(withProfilePictureUploading),
     withNotificationsLoading: reduce(withNotificationsLoading),
     withNotificationsNotLoading: reduce(withNotificationsNotLoading),
     withNotifications: reduce(withNotifications),

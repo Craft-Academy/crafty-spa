@@ -1,3 +1,4 @@
+import { Picture } from "./picture";
 import { User } from "./user.entity";
 
 export type GetUserFollowersResponse = {
@@ -34,4 +35,12 @@ export interface UserGateway {
     user: string;
     followingId: string;
   }): Promise<void>;
+  createLocalObjectUrlFromFile(picture: Picture): string;
+  uploadProfilePicture({
+    userId,
+    picture,
+  }: {
+    userId: string;
+    picture: Picture;
+  }): Promise<string>;
 }

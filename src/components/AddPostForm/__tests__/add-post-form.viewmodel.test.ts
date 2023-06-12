@@ -1,7 +1,8 @@
 import { postMessage as postMessageUseCase } from "@/lib/timelines/usecases/post-message.usecase";
 import { describe, test, expect, vitest } from "vitest";
 import { createAddPostFormViewModel } from "../add-post-form.viewmodel";
-import { AppDispatch, createTestStore } from "@/lib/create-store";
+import { AppDispatch, RootState, createTestStore } from "@/lib/create-store";
+import { stateBuilder } from "@/lib/state-builder";
 
 const createTestAddPostFormViewModel = ({
   dispatch = vitest.fn(),
@@ -12,6 +13,7 @@ const createTestAddPostFormViewModel = ({
   setCharactersCount = () => {
     return;
   },
+  state = stateBuilder().build(),
 }: {
   dispatch?: AppDispatch;
   messageId?: string;
@@ -19,6 +21,7 @@ const createTestAddPostFormViewModel = ({
   maxCharacters?: number;
   charactersCount?: number;
   setCharactersCount?: (newCharactersCount: number) => void;
+  state?: RootState;
 } = {}) =>
   createAddPostFormViewModel({
     dispatch,
@@ -27,7 +30,7 @@ const createTestAddPostFormViewModel = ({
     maxCharacters,
     charactersCount,
     setCharactersCount,
-  });
+  })(state);
 
 describe("AddPostForm view model", () => {
   test("postMessage correctly dispatches the postMessage use case", () => {
@@ -191,5 +194,24 @@ describe("AddPostForm view model", () => {
 
     expect(inputBackroundColor).toEqual("white");
     expect(charCounterColor).toEqual("muted");
+  });
+
+  test("should return the auth user profile picture and profile url", () => {
+    const state = stateBuilder()
+      .withAuthUser({
+        authUser: {
+          id: "alice-id",
+          profilePicture: "alice.png",
+          username: "Alice",
+        },
+      })
+      .build();
+
+    const viewModel = createTestAddPostFormViewModel({ state });
+
+    expect(viewModel.authUser).toEqual({
+      profilePicture: "alice.png",
+      profileUrl: "/u/alice-id",
+    });
   });
 });

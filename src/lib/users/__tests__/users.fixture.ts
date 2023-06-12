@@ -13,10 +13,15 @@ import {
   selectAreFollowersOfLoading,
   selectAreFollowingOfLoading,
 } from "../slices/relationships.slice";
-import { selectIsUserLoading } from "../slices/users.slice";
+import {
+  selectIsProfilePictureUploading,
+  selectIsUserLoading,
+} from "../slices/users.slice";
 import { getUser } from "../usecases/get-user.usecase";
 import { followUser } from "../usecases/follow-user.usecase";
 import { unfollowUser } from "../usecases/unfollow-user.usecase";
+import { Picture } from "../model/picture";
+import { uploadProfilePicture } from "../usecases/upload-profile-picture.usecase";
 
 export const createUsersFixture = (
   testStateBuilderProvider: StateBuilderProvider = stateBuilderProvider()
@@ -26,6 +31,18 @@ export const createUsersFixture = (
   return {
     givenExistingUsers(users: User[]) {
       testStateBuilderProvider.setState((builder) => builder.withUsers(users));
+    },
+    givenProfilePicturePreviewUrlWillBe({
+      picture,
+      previewUrl,
+    }: {
+      picture: Picture;
+      previewUrl: string;
+    }) {
+      userGateway.previewUrlByPicture = new Map([[picture, previewUrl]]);
+    },
+    givenUploadedPictureUrlWillBe(uploadedPictureUrl: string) {
+      userGateway.uploadedPictureUrl = uploadedPictureUrl;
     },
     givenUserFollows({
       user,
@@ -92,6 +109,13 @@ export const createUsersFixture = (
       );
       return store.dispatch(unfollowUser({ followingId }));
     },
+    async whenUploadingProfilePicture(picture: Picture) {
+      store = createTestStore(
+        { userGateway },
+        testStateBuilderProvider.getState()
+      );
+      return store.dispatch(uploadProfilePicture({ picture }));
+    },
     thenUserShouldBeLoading(userId: string) {
       const isLoading = selectIsUserLoading(userId, store.getState());
 
@@ -106,6 +130,13 @@ export const createUsersFixture = (
       const isLoading = selectAreFollowingOfLoading(of, store.getState());
 
       expect(isLoading).toEqual(true);
+    },
+    thenProfilePictureShouldBeUploading() {
+      const isProfilePictureUploading = selectIsProfilePictureUploading(
+        store.getState()
+      );
+
+      expect(isProfilePictureUploading).toBe(true);
     },
     thenRetrievedUserIs(expectedUser: User) {
       const expectedState = stateBuilder()
@@ -164,8 +195,16 @@ export const createUsersFixture = (
       expect(userGateway.lastUnfollowedUserBy).toEqual({ user, followingId });
     },
     thenAppStateShouldBe(expectedState: RootState) {
-      console.log(expectedState);
       expect(expectedState).toEqual(store.getState());
+    },
+    thenProfilePictureShouldHaveBeenUploaded({
+      userId,
+      picture,
+    }: {
+      userId: string;
+      picture: Picture;
+    }) {
+      expect(userGateway.uploadedPictureByUser.get(userId)).toBe(picture);
     },
   };
 };

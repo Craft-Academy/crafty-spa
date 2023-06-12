@@ -1,19 +1,16 @@
 import { CardContent } from "@/components/profile/CardContent";
 import { CardWithAvatar } from "@/components/profile/CardWithAvatar";
 import { NavTab } from "@/components/profile/NavTab";
-import { RootState } from "@/lib/create-store";
-import { User } from "@/lib/users/model/user.entity";
-import { selectUser } from "@/lib/users/slices/users.slice";
-import { Box, Heading, TabList, Tabs } from "@chakra-ui/react";
+import { Box, Button, Heading, TabList, Tabs } from "@chakra-ui/react";
 import { useSelector } from "react-redux";
 import { Outlet, useParams } from "react-router-dom";
+import { createProfileLayoutViewModel } from "./profile-layout.viewmodel";
+import { HiPhotograph } from "react-icons/hi";
 
 export const ProfileLayout = () => {
   const params = useParams();
   const userId = params.userId as string;
-  const user = useSelector<RootState, User | undefined>((rootState) =>
-    selectUser(userId, rootState)
-  );
+  const viewModel = useSelector(createProfileLayoutViewModel({ userId }));
 
   return (
     <>
@@ -22,26 +19,35 @@ export const ProfileLayout = () => {
         <CardWithAvatar
           maxW="xl"
           avatarProps={{
-            src: userId,
-            name: userId,
+            src: viewModel.profilePicture,
+            name: viewModel.username,
             uploading: false,
           }}
+          action={
+            viewModel.isAuthUserProfile ? (
+              <>
+                <Button size="sm" leftIcon={<HiPhotograph />}>
+                  Upload photo
+                </Button>
+              </>
+            ) : null
+          }
         >
           <CardContent>
             <Heading size="lg" fontWeight="extrabold" letterSpacing="tight">
-              {user?.username ?? "Unknown"}
+              {viewModel.username}
             </Heading>
           </CardContent>
         </CardWithAvatar>
       </Box>
       <Tabs size="lg">
         <TabList>
-          <NavTab to={`/u/${userId}`}>Timeline</NavTab>
-          <NavTab to={`/u/${userId}/following`}>
-            Following ({user?.followingCount ?? 0})
+          <NavTab to={viewModel.timelineLink}>Timeline</NavTab>
+          <NavTab to={viewModel.followingLink}>
+            {viewModel.tabs.following}
           </NavTab>
-          <NavTab to={`/u/${userId}/followers`}>
-            Followers ({user?.followersCount ?? 0})
+          <NavTab to={viewModel.followersLink}>
+            {viewModel.tabs.followers}
           </NavTab>
         </TabList>
       </Tabs>

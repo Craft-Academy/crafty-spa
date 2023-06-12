@@ -8,15 +8,21 @@ import { getUserTimeline } from "@/lib/timelines/usecases/get-user-timeline.usec
 import { getUser } from "../usecases/get-user.usecase";
 import { followUserPending } from "../usecases/follow-user.usecase";
 import { unfollowUserPending } from "../usecases/unfollow-user.usecase";
+import {
+  profilePictureUploading,
+  uploadProfilePicture,
+} from "../usecases/upload-profile-picture.usecase";
 
 export type UsersSliceState = EntityState<User> & {
   loadingUsers: { [userId: string]: boolean };
+  profilePictureUploading: boolean;
 };
 
 export const usersSlice = createSlice({
   name: "users",
   initialState: usersAdapter.getInitialState({
     loadingUsers: {},
+    profilePictureUploading: false,
   }) as UsersSliceState,
   reducers: {},
   extraReducers(builder) {
@@ -84,6 +90,24 @@ export const usersSlice = createSlice({
           },
         ]);
       })
+      .addCase(profilePictureUploading, (state, action) => {
+        state.profilePictureUploading = true;
+        usersAdapter.updateOne(state, {
+          id: action.payload.authUserId,
+          changes: {
+            profilePicture: action.payload.preview,
+          },
+        });
+      })
+      .addCase(uploadProfilePicture.fulfilled, (state, action) => {
+        state.profilePictureUploading = false;
+        usersAdapter.updateOne(state, {
+          id: action.payload.userId,
+          changes: {
+            profilePicture: action.payload.profilePictureUrl,
+          },
+        });
+      })
       .addMatcher(
         isAnyOf(getAuthUserTimeline.fulfilled, getUserTimeline.fulfilled),
         (state, action) => {
@@ -101,3 +125,6 @@ export const selectUser = (userId: string, rootState: RootState) =>
 
 export const selectIsUserLoading = (userId: string, rootState: RootState) =>
   rootState.users.users.loadingUsers[userId] ?? false;
+
+export const selectIsProfilePictureUploading = (rootState: RootState) =>
+  undefined;
