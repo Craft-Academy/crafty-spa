@@ -7,6 +7,7 @@ import {
 } from "../profile-timeline.viewmodel";
 import { postMessage } from "@/lib/timelines/usecases/post-message.usecase";
 import { buildUser } from "@/lib/users/__tests__/user.builder";
+import { buildMessage } from "@/lib/timelines/__tests__/message.builder";
 
 type MessageView = {
   id: string;
@@ -127,12 +128,12 @@ describe("Profile timeline view model for Bob's profile", () => {
         messages: ["msg1-id"],
       })
       .withMessages([
-        {
+        buildMessage({
           id: "msg1-id",
           author: "bob-id",
           publishedAt: "2023-05-17T10:55:00.000Z",
           text: "Hi it's Bob !",
-        },
+        }),
       ])
       .withUsers([bob])
       .build();
@@ -180,24 +181,24 @@ describe("Profile timeline view model for Bob's profile", () => {
         messages: ["msg1-id", "msg2-id"],
       })
       .withMessages([
-        {
+        buildMessage({
           id: "msg1-id",
           author: "bob-id",
           publishedAt: "2023-05-17T10:55:00.000Z",
           text: "Hi it's Bob !",
-        },
-        {
+        }),
+        buildMessage({
           id: "msg2-id",
           author: "alice-id",
           publishedAt: "2023-05-17T10:59:00.000Z",
           text: "Hi Bob !",
-        },
-        {
+        }),
+        buildMessage({
           id: "msg3-id",
           author: "charles-id",
           publishedAt: "2023-05-17T11:00:00.000Z",
           text: "Charles' message",
-        },
+        }),
       ])
       .withUsers([bob, alice])
       .build();
@@ -246,12 +247,12 @@ describe("Profile timeline view model for Bob's profile", () => {
         messages: ["msg1-id"],
       })
       .withMessages([
-        {
+        buildMessage({
           id: "msg1-id",
           author: "bob-id",
           publishedAt: "2023-05-17T10:55:00.000Z",
           text: "Hi it's Bob !",
-        },
+        }),
       ])
       .withMessageNotPosted({
         messageId: "msg1-id",
@@ -300,12 +301,12 @@ describe("Profile timeline view model for Bob's profile", () => {
         messages: ["msg1-id"],
       })
       .withMessages([
-        {
+        buildMessage({
           id: "msg1-id",
           author: "bob-id",
           publishedAt: "2023-05-17T10:55:00.000Z",
           text: "Hi it's Bob !",
-        },
+        }),
       ])
       .withMessageNotPosted({
         messageId: "msg1-id",
