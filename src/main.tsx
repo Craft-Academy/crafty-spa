@@ -11,6 +11,7 @@ import { FakeMessageGateway } from "./lib/timelines/infra/fake-message.gateway.t
 import { RealDateProvider } from "./lib/timelines/infra/real-date-provider.ts";
 import { FakeDataUserGateway } from "./lib/users/infra/fake-data-user.gateway.ts";
 import { FakeStorageNotificationGateway } from "./lib/notifications/infra/fake-storage.notification.gateway.ts";
+import { HttpTimelineGateway } from "./lib/timelines/infra/http-timeline.gateway.ts";
 
 const fakeAuthGateway = new FakeAuthGateway(500);
 fakeAuthGateway.willSucceedForGoogleAuthForUser = [...users.values()][0];
@@ -24,7 +25,7 @@ const dateProvider = new RealDateProvider();
 //@ts-ignore
 window.__NOTIF__ = notificationGateway;
 
-const timelineGateway = new FakeDataTimelineGateway();
+const timelineGateway = new HttpTimelineGateway();
 
 const store = createStore({
   authGateway,
