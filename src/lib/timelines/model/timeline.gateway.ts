@@ -1,4 +1,5 @@
 import { User } from "@/lib/users/model/user.entity";
+import { Like } from "./like.entity";
 
 export type GetUserTimelineResponse = {
   timeline: {
@@ -9,7 +10,7 @@ export type GetUserTimelineResponse = {
       text: string;
       author: User;
       publishedAt: string;
-      likes: string[];
+      likes: Like[];
     }[];
   };
 };

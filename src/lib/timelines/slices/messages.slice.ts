@@ -29,7 +29,7 @@ export const messagesSlice = createSlice({
   extraReducers(builder) {
     builder
       .addCase(postMessagePending, (state, action) => {
-        messagesAdapter.addOne(state, action.payload);
+        messagesAdapter.upsertOne(state, action.payload);
         delete state.messagesNotPosted[action.payload.id];
       })
       .addCase(postMessage.rejected, (state, action) => {
@@ -60,6 +60,7 @@ export const messagesSlice = createSlice({
             action.payload.messages.map((m) => ({
               ...m,
               author: m.author.id,
+              likes: m.likes.map((l) => l.id),
             }))
           );
         }

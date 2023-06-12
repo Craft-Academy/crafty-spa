@@ -82,7 +82,7 @@ export const Post = (props: {
       >
         {msg.text}
       </Text>
-      <LikeButton />
+      <LikeButton messageId={msg.id} />
     </Stack>
   );
 };

@@ -28,7 +28,7 @@ type ExpectedTimeline = {
     text: string;
     author: User;
     publishedAt: string;
-    likes: string[];
+    likes: Like[];
   }[];
 };
 
@@ -53,7 +53,7 @@ export const createTimelinesFixture = (
         text: string;
         author: User;
         publishedAt: string;
-        likes: string[];
+        likes: Like[];
       }[];
     }) {
       timelineGateway.timelinesByUser.set(timeline.user.id, timeline);
@@ -70,6 +70,7 @@ export const createTimelinesFixture = (
             timeline.messages.map((m) => ({
               ...m,
               author: m.author.id,
+              likes: m.likes.map((l) => l.id),
             }))
           )
           .withUsers([timeline.user, ...timeline.messages.map((m) => m.author)])
@@ -199,12 +200,19 @@ export const createTimelinesFixture = (
           messages: expectedTimeline.messages.map((m) => m.id),
         })
         .withMessages(
-          expectedTimeline.messages.map((m) => ({ ...m, author: m.author.id }))
+          expectedTimeline.messages.map((m) => ({
+            ...m,
+            author: m.author.id,
+            likes: m.likes.map((l) => l.id),
+          }))
         )
         .withUsers([
           expectedTimeline.user,
           ...expectedTimeline.messages.map((m) => m.author),
         ])
+        .withLikes(
+          expectedTimeline.messages.flatMap((message) => message.likes)
+        )
         .withNotLoadingTimelineOf({ user: expectedTimeline.user.id });
 
       expectedState =
@@ -213,6 +221,7 @@ export const createTimelinesFixture = (
           : expectedState.withMessageNotPosted(
               expectedTimeline.messageNotPosted
             );
+
       expect(store.getState()).toEqual(expectedState.build());
     },
     thenAppStateShouldBe(stateUpdater: (initialState: RootState) => RootState) {

@@ -9,6 +9,7 @@ import {
   followersByUser,
   followingByUser,
   isAuthUserFollowsUser,
+  likesByMessage,
 } from "@/lib/fake-data";
 
 export class FakeDataTimelineGateway implements TimelineGateway {
@@ -41,6 +42,7 @@ export class FakeDataTimelineGateway implements TimelineGateway {
               followersCount: (followersByUser.get(author.id) ?? []).length,
               followingCount: (followingByUser.get(author.id) ?? []).length,
             },
+            likes: likesByMessage.get(message.id) ?? [],
             publishedAt: message.publishedAt.toISOString(),
           };
         })

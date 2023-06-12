@@ -42,10 +42,18 @@ describe("Feature: Retrieving user's timeline", () => {
         {
           ...bobMessage,
           author: bob,
+          likes: [
+            {
+              id: "alice-like-id",
+              messageId: "msg1-id",
+              userId: "alice-id",
+            },
+          ],
         },
         {
           ...aliceMessage,
           author: alice,
+          likes: [],
         },
       ],
     });
@@ -65,7 +73,13 @@ describe("Feature: Retrieving user's timeline", () => {
           text: "Hello it's Bob",
           author: bob,
           publishedAt: "2023-05-16T12:06:00.000Z",
-          likes: ["alice-like-id"],
+          likes: [
+            {
+              id: "alice-like-id",
+              messageId: "msg1-id",
+              userId: "alice-id",
+            },
+          ],
         },
         {
           id: "msg2-id",

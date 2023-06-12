@@ -3,6 +3,7 @@ import {
   GetUserTimelineResponse,
   TimelineGateway,
 } from "../model/timeline.gateway";
+import { Like } from "../model/like.entity";
 
 export class FakeTimelineGateway implements TimelineGateway {
   constructor(private readonly delay = 0) {}
@@ -17,7 +18,7 @@ export class FakeTimelineGateway implements TimelineGateway {
         text: string;
         author: User;
         publishedAt: string;
-        likes: string[];
+        likes: Like[];
       }[];
     }
   >();
